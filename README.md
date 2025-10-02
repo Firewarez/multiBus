@@ -20,7 +20,7 @@ docker-compose up --build
 ```
 
 E para desligar o serviço
-```
+``` 
 docker-compose down -v
 ```
 

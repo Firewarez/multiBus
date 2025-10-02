@@ -1,0 +1,1 @@
+CREATE IF NOT EXISTS DATABASE multibus_db;
