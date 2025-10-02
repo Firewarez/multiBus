@@ -1,0 +1,12 @@
+## Ignore geral node modules
+node_modules
+
+## Ignore environment files
+.env
+.git
+.gitignore
+npm-debug.log
+*.env
+
+##Ignore sql
+db.sql
