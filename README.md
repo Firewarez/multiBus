@@ -13,6 +13,8 @@ cd multiBus
 Copy-Item .env.example .env
 # Linux/Mac  
 cp .env.example .env
+
+# ⚠️ IMPORTANTE: Edite o .env e defina suas próprias senhas!
 ```
 
 ### 2️⃣ **Inicie o Banco (Docker)**
@@ -40,14 +42,16 @@ npm run dev       # Inicia servidor
 🔌 Porta: 5433 ⚠️ (não 5432!)
 🏷️ Database: multibus_db
 👤 Usuário: multibus_user
-🔑 Senha: L0Re6a9H4d1k
+🔑 Senha: [DEFINA_UMA_SENHA_FORTE]
 ```
 
 **Passo a passo:**
 1. Nova Conexão → PostgreSQL
-2. Preencher dados acima
+2. Preencher dados acima (definir sua própria senha)
 3. Testar Conexão → OK
 4. Finalizar
+
+⚠️ **IMPORTANTE**: Defina sua própria senha no arquivo .env
 
 ## 🌱 Dados de João Pessoa
 
@@ -125,10 +129,12 @@ docker-compose logs db      # Ver logs banco
 
 ## ⚙️ Configuração (.env)
 
+⚠️ **AVISO DE SEGURANÇA**: Nunca exponha senhas reais em repositórios públicos!
+
 ```env
 # Banco de Dados
 POSTGRES_USER=multibus_user
-POSTGRES_PASSWORD=L0Re6a9H4d1k
+POSTGRES_PASSWORD=[SUA_SENHA_FORTE_AQUI]
 POSTGRES_DB=multibus_db
 DB_PORT=5433
 DB_HOST=localhost
@@ -138,8 +144,14 @@ PORT=3000
 NODE_ENV=development
 
 # Google Maps (opcional)
-GOOGLE_API_KEY=sua_chave_aqui
+GOOGLE_API_KEY=[SUA_CHAVE_GOOGLE_AQUI]
 ```
+
+### 🔐 **Como configurar com segurança:**
+1. Copie `.env.example` para `.env`
+2. **Gere uma senha forte** (min. 12 caracteres)
+3. **Crie sua chave Google Maps** (se quiser coordenadas reais)
+4. **Nunca commite o .env** (já está no .gitignore)
 
 ## 🏗️ Estrutura do Projeto
 
@@ -164,7 +176,7 @@ multiBus/
 - ✅ Porta: **5433** (não 5432)
 - ✅ Database: **multibus_db**
 - ✅ Usuário: **multibus_user**
-- ✅ Senha: **L0Re6a9H4d1k**
+- ✅ Senha: **[A QUE VOCÊ DEFINIU NO .env]**
 
 ### ❌ **"Connection refused"**
 ```bash
