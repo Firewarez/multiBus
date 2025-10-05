@@ -1,0 +1,1054 @@
+openapi: 3.0.0
+info:
+  title: API MultiBus
+  description: API de gerenciamento de rotas e localização de transporte público
+  version: 1.0.0
+  contact:
+    name: MultiBus Team
+servers:
+  - url: http://localhost:3000
+    description: Servidor de desenvolvimento
+
+paths:
+  /:
+    get:
+      summary: Endpoint de teste da API
+      description: Retorna uma mensagem confirmando que a API está rodando
+      responses:
+        '200':
+          description: API funcionando corretamente
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "🚍 API MultiBus rodando!"
+
+  /stops:
+    get:
+      summary: Lista todas as paradas
+      description: Retorna uma lista de todas as paradas de ônibus cadastradas
+      tags:
+        - Paradas
+      responses:
+        '200':
+          description: Lista de paradas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stop'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Cria uma nova parada
+      description: Cadastra uma nova parada de ônibus
+      tags:
+        - Paradas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StopInput'
+      responses:
+        '201':
+          description: Parada criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stop'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /stops/{id}:
+    get:
+      summary: Busca uma parada por ID
+      description: Retorna os dados de uma parada específica
+      tags:
+        - Paradas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da parada
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dados da parada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stop'
+        '404':
+          description: Parada não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Atualiza uma parada
+      description: Atualiza os dados de uma parada existente
+      tags:
+        - Paradas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da parada
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StopInput'
+      responses:
+        '200':
+          description: Parada atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stop'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Remove uma parada
+      description: Remove uma parada do sistema
+      tags:
+        - Paradas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da parada
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Parada removida com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Parada removida com sucesso."
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /lines:
+    get:
+      summary: Lista todas as linhas
+      description: Retorna uma lista de todas as linhas de ônibus cadastradas
+      tags:
+        - Linhas
+      responses:
+        '200':
+          description: Lista de linhas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Line'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Cria uma nova linha
+      description: Cadastra uma nova linha de ônibus
+      tags:
+        - Linhas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LineInput'
+      responses:
+        '201':
+          description: Linha criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Line'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /lines/{id}:
+    get:
+      summary: Busca uma linha por ID
+      description: Retorna os dados de uma linha específica
+      tags:
+        - Linhas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da linha
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dados da linha
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Line'
+        '404':
+          description: Linha não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Atualiza uma linha
+      description: Atualiza os dados de uma linha existente
+      tags:
+        - Linhas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da linha
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LineInput'
+      responses:
+        '200':
+          description: Linha atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Line'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Remove uma linha
+      description: Remove uma linha do sistema
+      tags:
+        - Linhas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da linha
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Linha removida com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Linha removida com sucesso."
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /routes:
+    get:
+      summary: Lista todas as rotas
+      description: Retorna uma lista de todas as rotas com informações das linhas
+      tags:
+        - Rotas
+      responses:
+        '200':
+          description: Lista de rotas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RouteWithLine'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Cria uma nova rota
+      description: Cadastra uma nova rota para uma linha
+      tags:
+        - Rotas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteInput'
+      responses:
+        '201':
+          description: Rota criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /routes/{id}:
+    get:
+      summary: Busca uma rota por ID
+      description: Retorna os dados de uma rota específica
+      tags:
+        - Rotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da rota
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dados da rota
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteWithLine'
+        '404':
+          description: Rota não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Atualiza uma rota
+      description: Atualiza os dados de uma rota existente
+      tags:
+        - Rotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da rota
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteInput'
+      responses:
+        '200':
+          description: Rota atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Remove uma rota
+      description: Remove uma rota do sistema
+      tags:
+        - Rotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da rota
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Rota removida com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Rota removida com sucesso."
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /routes/line/{lineId}:
+    get:
+      summary: Busca rotas por linha
+      description: Retorna todas as rotas de uma linha específica
+      tags:
+        - Rotas
+      parameters:
+        - name: lineId
+          in: path
+          required: true
+          description: ID da linha
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Rotas da linha
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Route'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /routes/{id}/stops:
+    get:
+      summary: Lista paradas de uma rota
+      description: Retorna todas as paradas de uma rota em ordem
+      tags:
+        - Rotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da rota
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Paradas da rota
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StopWithOrder'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Adiciona parada à rota
+      description: Adiciona uma parada existente a uma rota
+      tags:
+        - Rotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da rota
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteStopInput'
+      responses:
+        '201':
+          description: Parada adicionada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteStop'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /routes/{routeId}/stops/{stopId}:
+    delete:
+      summary: Remove parada da rota
+      description: Remove uma parada específica de uma rota
+      tags:
+        - Rotas
+      parameters:
+        - name: routeId
+          in: path
+          required: true
+          description: ID da rota
+          schema:
+            type: integer
+        - name: stopId
+          in: path
+          required: true
+          description: ID da parada
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Parada removida da rota com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Parada removida da rota com sucesso."
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Stop:
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Cria uma nova rota
+      description: Cadastra uma nova rota para uma linha
+      tags:
+        - Rotas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteInput'
+      responses:
+        '201':
+          description: Rota criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /routes/{id}:
+    get:
+      summary: Busca uma rota por ID
+      description: Retorna os dados de uma rota específica
+      tags:
+        - Rotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da rota
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dados da rota
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteWithLine'
+        '404':
+          description: Rota não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Atualiza uma rota
+      description: Atualiza os dados de uma rota existente
+      tags:
+        - Rotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da rota
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteInput'
+      responses:
+        '200':
+          description: Rota atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Remove uma rota
+      description: Remove uma rota do sistema
+      tags:
+        - Rotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da rota
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Rota removida com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Rota removida com sucesso."
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /routes/line/{lineId}:
+    get:
+      summary: Busca rotas por linha
+      description: Retorna todas as rotas de uma linha específica
+      tags:
+        - Rotas
+      parameters:
+        - name: lineId
+          in: path
+          required: true
+          description: ID da linha
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Rotas da linha
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Route'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /routes/{id}/stops:
+    get:
+      summary: Lista paradas de uma rota
+      description: Retorna todas as paradas de uma rota em ordem
+      tags:
+        - Rotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da rota
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Paradas da rota
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StopWithOrder'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Adiciona parada à rota
+      description: Adiciona uma parada existente a uma rota
+      tags:
+        - Rotas
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da rota
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteStopInput'
+      responses:
+        '201':
+          description: Parada adicionada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteStop'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /routes/{routeId}/stops/{stopId}:
+    delete:
+      summary: Remove parada da rota
+      description: Remove uma parada específica de uma rota
+      tags:
+        - Rotas
+      parameters:
+        - name: routeId
+          in: path
+          required: true
+          description: ID da rota
+          schema:
+            type: integer
+        - name: stopId
+          in: path
+          required: true
+          description: ID da parada
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Parada removida da rota com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Parada removida da rota com sucesso."
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  schemas:
+    Stop:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID único da parada
+          example: 1
+        name:
+          type: string
+          description: Nome da parada
+          example: "Terminal Central"
+        latitude:
+          type: number
+          format: double
+          description: Latitude da parada
+          example: -23.5505
+        longitude:
+          type: number
+          format: double
+          description: Longitude da parada
+          example: -46.6333
+      required:
+        - id
+        - name
+        - latitude
+        - longitude
+
+    StopInput:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nome da parada
+          example: "Terminal Central"
+        latitude:
+          type: number
+          format: double
+          description: Latitude da parada
+          example: -23.5505
+        longitude:
+          type: number
+          format: double
+          description: Longitude da parada
+          example: -46.6333
+      required:
+        - name
+        - latitude
+        - longitude
+
+    Line:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID único da linha
+          example: 1
+        code:
+          type: string
+          description: Código da linha
+          example: "001"
+        name:
+          type: string
+          description: Nome da linha
+          example: "Centro - Terminal"
+      required:
+        - id
+        - code
+        - name
+
+    LineInput:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Código da linha
+          example: "001"
+        name:
+          type: string
+          description: Nome da linha
+          example: "Centro - Terminal"
+      required:
+        - code
+        - name
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Mensagem de erro
+          example: "Erro interno do servidor"
+      required:
+        - error
+
+    Route:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID único da rota
+          example: 1
+        line_id:
+          type: integer
+          description: ID da linha
+          example: 1
+        direction:
+          type: string
+          description: Direção da rota
+          enum: [ida, volta]
+          example: "ida"
+      required:
+        - id
+        - line_id
+        - direction
+
+    RouteWithLine:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID único da rota
+          example: 1
+        line_id:
+          type: integer
+          description: ID da linha
+          example: 1
+        direction:
+          type: string
+          description: Direção da rota
+          enum: [ida, volta]
+          example: "ida"
+        line_code:
+          type: string
+          description: Código da linha
+          example: "1300"
+        line_name:
+          type: string
+          description: Nome da linha
+          example: "Terminal - Tambaú"
+      required:
+        - id
+        - line_id
+        - direction
+        - line_code
+        - line_name
+
+    RouteInput:
+      type: object
+      properties:
+        line_id:
+          type: integer
+          description: ID da linha
+          example: 1
+        direction:
+          type: string
+          description: Direção da rota
+          enum: [ida, volta]
+          example: "ida"
+      required:
+        - line_id
+        - direction
+
+    StopWithOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID único da parada
+          example: 1
+        name:
+          type: string
+          description: Nome da parada
+          example: "Terminal de Integração"
+        latitude:
+          type: number
+          format: double
+          description: Latitude da parada
+          example: -7.1178567
+        longitude:
+          type: number
+          format: double
+          description: Longitude da parada
+          example: -34.8900741
+        stop_order:
+          type: integer
+          description: Ordem da parada na rota
+          example: 1
+      required:
+        - id
+        - name
+        - latitude
+        - longitude
+        - stop_order
+
+    RouteStop:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID único do registro
+          example: 1
+        route_id:
+          type: integer
+          description: ID da rota
+          example: 1
+        stop_id:
+          type: integer
+          description: ID da parada
+          example: 1
+        stop_order:
+          type: integer
+          description: Ordem da parada na rota
+          example: 1
+      required:
+        - id
+        - route_id
+        - stop_id
+        - stop_order
+
+    RouteStopInput:
+      type: object
+      properties:
+        stop_id:
+          type: integer
+          description: ID da parada a ser adicionada
+          example: 1
+        stop_order:
+          type: integer
+          description: Ordem da parada na rota
+          example: 1
+      required:
+        - stop_id
+        - stop_order

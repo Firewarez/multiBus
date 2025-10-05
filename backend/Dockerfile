@@ -5,10 +5,13 @@ FROM node:20.18.0
 WORKDIR /backend
 
 COPY package*.json ./
+COPY tsconfig.json ./
 RUN npm install 
 
 COPY . .
 
+# Compila o TypeScript para JavaScript
+RUN npm run build
 
 # PRA USAR NODEMON NO MODO DEV
 # PARA TESTE VIA NODEMON, SUBSTITUA PARA ( CMD ["npm", "run", "dev"] )
