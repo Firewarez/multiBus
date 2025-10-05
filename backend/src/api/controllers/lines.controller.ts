@@ -1,5 +1,17 @@
 import { Request, Response } from "express";
 import * as linesService from "../services/lines.services";
+import { z } from "zod";
+
+// 1. Define Zod schema
+const LineSchema = z.object({
+    id: z.number().optional(),
+    name: z.string(),
+    color: z.string(),
+    // add other fields as needed
+});
+
+// 2. Use Zod type for TypeScript
+type Line = z.infer<typeof LineSchema>;
 
 export const getAllLines = async (req: Request, res: Response) => {
     try {
@@ -13,19 +25,28 @@ export const getAllLines = async (req: Request, res: Response) => {
 export const getLineById = async (req: Request, res: Response) => {
     try {
         const line = await linesService.getLineById(Number(req.params.id));
-        if (!line) return res.status(404).json({ error: "Linha não encontrada." });
+        if (!line) return res.status(404).json({ error: "Linha nÃ£o encontrada." });
         res.json(line);
     } catch {
+        console.error(Error); // Isso mostra o erro real no terminal
         res.status(500).json({ error: "Erro ao buscar linha." });
     }
 };
 
 export const createLine = async (req: Request, res: Response) => {
     try {
-        const newLine = await linesService.createLine(req.body);
+        const line: { code: string; name: string } = {
+            code: req.body.code,
+            name: req.body.name,
+        };
+        const newLine = await linesService.createLine(line);
         res.status(201).json(newLine);
-    } catch {
-        res.status(500).json({ error: "Erro ao criar linha." });
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).json({ errors: error.issues });
+        }
+        console.error(error); // Isso mostra o erro real no terminal
+        res.status(500).json({ error: "Internal server error" });
     }
 };
 

@@ -1,5 +1,18 @@
 import { Request, Response } from "express";
 import * as routesService from "../services/routes.services";
+import { z } from "zod";
+
+// 1. Defina o schema Zod para uma rota
+const RouteSchema = z.object({
+    id: z.number().optional(),
+    line_id: z.number(),
+    direction: z.string().refine((val) => val === 'ida' || val === 'volta', {
+        message: "Direction deve ser 'ida' ou 'volta'"
+    }),
+});
+
+// 2. Tipo TypeScript inferido
+type Route = z.infer<typeof RouteSchema>;
 
 export const getAllRoutes = async (req: Request, res: Response) => {
     try {
@@ -20,24 +33,39 @@ export const getRouteById = async (req: Request, res: Response) => {
     }
 };
 
+
 export const createRoute = async (req: Request, res: Response) => {
     try {
-        const newRoute = await routesService.createRoute(req.body);
+        const result = RouteSchema.safeParse(req.body);
+        if (!result.success) {
+            return res.status(400).json({ errors: result.error.issues });
+        }
+        
+        const { line_id, direction } = result.data;
+        const newRoute = await routesService.createRoute({ line_id, direction });
         res.status(201).json(newRoute);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: "Erro ao criar rota." });
     }
 };
 
+
 export const updateRoute = async (req: Request, res: Response) => {
     try {
-        const updated = await routesService.updateRoute(Number(req.params.id), req.body);
+        const result = RouteSchema.safeParse(req.body);
+        if (!result.success) {
+            return res.status(400).json({ errors: result.error.issues });
+        }
+        
+        const { line_id, direction } = result.data;
+        const updated = await routesService.updateRoute(Number(req.params.id), { line_id, direction });
         res.json(updated);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: "Erro ao atualizar rota." });
     }
 };
-
 export const deleteRoute = async (req: Request, res: Response) => {
     try {
         await routesService.deleteRoute(Number(req.params.id));
