@@ -21,7 +21,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
     customSiteTitle: "MultiBus API Documentation"
 }));
 
-// Rotas principais
+//Rotas Principais dos Ônibus
 app.use("/stops", stopsRoutes);
 app.use("/lines", linesRoutes);
 app.use("/routes", routesRoutes);
