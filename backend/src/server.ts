@@ -1,3 +1,4 @@
+// Todas as Importações
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
@@ -12,7 +13,7 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-// Carregar documentação Swagger
+// Carregar Documentação Swagger
 const swaggerDocument = YAML.load(path.join(__dirname, "../swagger.yaml"));
 
 // Swagger UI
@@ -26,16 +27,17 @@ app.use("/stops", stopsRoutes);
 app.use("/lines", linesRoutes);
 app.use("/routes", routesRoutes);
 
-// Teste de rota inicial com tipagem
+// Teste de Rota Inicial com Tipagem em TY
 app.get("/", (req: Request, res: Response) => {
     res.send("🚍 API MultiBus rodando!");
 });
 
-// Rota para acessar a documentação
+// Rota para Acessar a Documentação
 app.get("/docs", (req: Request, res: Response) => {
     res.redirect("/api-docs");
 });
 
+// Quando Executado, Imprime a Porta que está Rodando
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚍 Servidor rodando na porta ${PORT}`);
