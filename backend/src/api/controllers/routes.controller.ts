@@ -22,7 +22,7 @@ export const getAllRoutes = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Erro ao buscar rotas." });
     }
 };
-
+// 3. Controlador para encontrar uma rota existente por id
 export const getRouteById = async (req: Request, res: Response) => {
     try {
         const route = await routesService.getRouteById(Number(req.params.id));
@@ -33,7 +33,7 @@ export const getRouteById = async (req: Request, res: Response) => {
     }
 };
 
-
+// 4. Controlador para criar uma rota 
 export const createRoute = async (req: Request, res: Response) => {
     try {
         const result = RouteSchema.safeParse(req.body);
@@ -50,7 +50,7 @@ export const createRoute = async (req: Request, res: Response) => {
     }
 };
 
-
+// 5. Controlador para atualizar uma rota existente
 export const updateRoute = async (req: Request, res: Response) => {
     try {
         const result = RouteSchema.safeParse(req.body);
@@ -66,6 +66,7 @@ export const updateRoute = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Erro ao atualizar rota." });
     }
 };
+// 6. Controlador para deletar uma rota 
 export const deleteRoute = async (req: Request, res: Response) => {
     try {
         await routesService.deleteRoute(Number(req.params.id));
@@ -74,7 +75,7 @@ export const deleteRoute = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Erro ao deletar rota." });
     }
 };
-
+// 7. Controlador para achar uma rota pela linha
 export const getRoutesByLine = async (req: Request, res: Response) => {
     try {
         const routes = await routesService.getRoutesByLine(Number(req.params.lineId));
@@ -83,7 +84,7 @@ export const getRoutesByLine = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Erro ao buscar rotas da linha." });
     }
 };
-
+// 7. Controlador para achar as paradas de uma rota
 export const getRouteStops = async (req: Request, res: Response) => {
     try {
         const stops = await routesService.getRouteStops(Number(req.params.id));
@@ -92,7 +93,7 @@ export const getRouteStops = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Erro ao buscar paradas da rota." });
     }
 };
-
+// 8. Controlador para adicionar uma parada a uma rota
 export const addStopToRoute = async (req: Request, res: Response) => {
     try {
         const result = await routesService.addStopToRoute(Number(req.params.id), req.body);
@@ -101,7 +102,7 @@ export const addStopToRoute = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Erro ao adicionar parada à rota." });
     }
 };
-
+// 9. Controlador para retirar as paradas de uma rota
 export const removeStopFromRoute = async (req: Request, res: Response) => {
     try {
         await routesService.removeStopFromRoute(Number(req.params.routeId), Number(req.params.stopId));
