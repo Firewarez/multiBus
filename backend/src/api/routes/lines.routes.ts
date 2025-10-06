@@ -5,7 +5,7 @@ import * as linesController from "../controllers/lines.controller";
 
 const router = Router();
 
-//Definições das Rotas
+// CRUD para linhas
 router.get("/", linesController.getAllLines);
 router.get("/:id", linesController.getLineById);
 router.post("/", linesController.createLine);

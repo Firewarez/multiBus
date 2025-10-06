@@ -2,7 +2,7 @@ import { Router } from "express";
 import * as stopsController from "../controllers/stops.controller";
 
 const router = Router();
-
+// CRUD para paradas
 router.get("/", stopsController.getAllStops);
 router.get("/:id", stopsController.getStopById);
 router.post("/", stopsController.createStop);
