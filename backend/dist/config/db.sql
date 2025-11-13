@@ -1,3 +1,30 @@
+-- Tabela de Usuários
+CREATE TABLE IF NOT EXISTS usuario (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    telefone VARCHAR(15),
+    nascimento DATE NOT NULL,
+    senha VARCHAR(255) NOT NULL
+);
+
+-- Tabela de Login (para autenticação)
+CREATE TABLE IF NOT EXISTS login (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(100) NOT NULL REFERENCES usuario(email) ON DELETE CASCADE,
+    senha VARCHAR(255) NOT NULL REFERENCES usuario(senha) ON DELETE CASCADE,
+    data_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de Paradas Favoritas
+CREATE TABLE IF NOT EXISTS paradafav (
+    id SERIAL PRIMARY KEY,
+    usuario_id INT NOT NULL REFERENCES usuario(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    longitude DECIMAL(9,6) NOT NULL,
+    latitude DECIMAL(9,6) NOT NULL
+);
 -- Paradas (Stops)
 CREATE TABLE IF NOT EXISTS stops (
     id SERIAL PRIMARY KEY,
