@@ -79,7 +79,7 @@ export default function Home() {
             </ListItemButton>
           </ListItem>
 
-          <ListItem disablePadding>
+          <ListItem disablePadding component={Link} to="/recarga-cartao">
             <ListItemButton>
               <ListItemIcon>
                 <CreditCard className="text-white" />

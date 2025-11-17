@@ -7,6 +7,7 @@ import Ajuda from "./pages/Ajuda";
 import TermosUso from "./pages/TermosUso";
 import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
 import MapaPrevisoes from "./pages/MapaPrevisoes";
+import RecargaCartao from "./pages/RecargaCartao";
 
 function App() {
   return (
@@ -20,6 +21,8 @@ function App() {
         <Route path="/termos-uso" element={<TermosUso />} />
         <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />
         <Route path="/mapa-previsoes" element={<MapaPrevisoes />} />
+        <Route path="/recarga-cartao" element={<RecargaCartao />} />
+
       </Routes>
     </BrowserRouter>
   );
