@@ -127,31 +127,6 @@ docker-compose logs api     # Ver logs API
 docker-compose logs db      # Ver logs banco
 ```
 
-## ⚙️ Configuração (.env)
-
-⚠️ **AVISO DE SEGURANÇA**: Nunca exponha senhas reais em repositórios públicos!
-
-```env
-# Banco de Dados
-POSTGRES_USER=multibus_user
-POSTGRES_PASSWORD=[SUA_SENHA_FORTE_AQUI]
-POSTGRES_DB=multibus_db
-DB_PORT=5433
-DB_HOST=localhost
-
-# Aplicação
-PORT=3000
-NODE_ENV=development
-
-# Google Maps (opcional)
-GOOGLE_API_KEY=[SUA_CHAVE_GOOGLE_AQUI]
-```
-
-### 🔐 **Como configurar com segurança:**
-1. Copie `.env.example` para `.env`
-2. **Gere uma senha forte** (min. 12 caracteres)
-3. **Crie sua chave Google Maps** (se quiser coordenadas reais)
-4. **Nunca commite o .env** (já está no .gitignore)
 
 ## 🏗️ Estrutura do Projeto
 
@@ -166,6 +141,10 @@ multiBus/
 │   ├── swagger.yaml      # Documentação API
 │   └── package.json
 ├── frontend/             # React (em desenvolvimento)
+     ├── src/
+          ├── components/   # Mapa
+          └── pages/        #  Componente das paginas
+     ├── # Componentes e variaveis globais css/ts
 ├── docker-compose.yml    # Orquestração
 └── README.md
 ```
