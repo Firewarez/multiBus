@@ -6,6 +6,7 @@ import path from "path";
 import stopsRoutes from "./api/routes/stops.routes";
 import linesRoutes from "./api/routes/lines.routes";
 import routesRoutes from "./api/routes/routes.routes";
+import loginRoutes from "./api/routes/login.routes";
 
 dotenv.config();
 
@@ -22,9 +23,10 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
 }));
 
 // Rotas principais
-app.use("/stops", stopsRoutes);
-app.use("/lines", linesRoutes);
-app.use("/routes", routesRoutes);
+app.use("/api/v1/stops", stopsRoutes);
+app.use("/api/v1/lines", linesRoutes);
+app.use("/api/v1/routes", routesRoutes);
+app.use("/api/v1/login", loginRoutes);
 
 // Teste de rota inicial com tipagem
 app.get("/", (req: Request, res: Response) => {
