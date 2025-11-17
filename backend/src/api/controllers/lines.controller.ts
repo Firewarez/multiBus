@@ -1,3 +1,4 @@
+// Importações básicas do Express, serviços e Zod
 import { Request, Response } from "express";
 import * as linesService from "../services/lines.services";
 import { z } from "zod";
@@ -13,6 +14,7 @@ const LineSchema = z.object({
 // 2. Use Zod type for TypeScript
 type Line = z.infer<typeof LineSchema>;
 
+// 3. Controlador para Listar todas as linhas 
 export const getAllLines = async (req: Request, res: Response) => {
     try {
         const lines = await linesService.getAllLines();
@@ -22,6 +24,7 @@ export const getAllLines = async (req: Request, res: Response) => {
     }
 };
 
+// 4. Controlador para buscar uma linha pelo ID
 export const getLineById = async (req: Request, res: Response) => {
     try {
         const line = await linesService.getLineById(Number(req.params.id));
@@ -33,6 +36,7 @@ export const getLineById = async (req: Request, res: Response) => {
     }
 };
 
+// 5. Controlador para criar uma nova linha
 export const createLine = async (req: Request, res: Response) => {
     try {
         const line: { code: string; name: string } = {
@@ -50,6 +54,7 @@ export const createLine = async (req: Request, res: Response) => {
     }
 };
 
+// 6. Controlador para atualizar uma linha existente
 export const updateLine = async (req: Request, res: Response) => {
     try {
         const updated = await linesService.updateLine(Number(req.params.id), req.body);
@@ -59,6 +64,7 @@ export const updateLine = async (req: Request, res: Response) => {
     }
 };
 
+// 7. Controlador para deletar uma linha existente
 export const deleteLine = async (req: Request, res: Response) => {
     try {
         await linesService.deleteLine(Number(req.params.id));

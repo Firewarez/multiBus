@@ -13,14 +13,14 @@ CREATE TABLE IF NOT EXISTS lines (
     name VARCHAR(100) NOT NULL   
 );
 
--- Rotas (Routes) — cada linha pode ter mais de uma rota (ida/volta)
+-- Rotas (Routes) — Cada Linha pode ter mais de uma Rota (Ida/Volta)
 CREATE TABLE IF NOT EXISTS routes (
     id SERIAL PRIMARY KEY,
     line_id INT NOT NULL REFERENCES lines(id) ON DELETE CASCADE,
     direction VARCHAR(10) NOT NULL CHECK (direction IN ('ida', 'volta'))
 );
 
--- Ordem das paradas dentro de cada rota (Route_Stops)
+-- Ordem das Paradas dentro de cada Rota (Route_Stops)
 CREATE TABLE IF NOT EXISTS route_stops (
     id SERIAL PRIMARY KEY,
     route_id INT NOT NULL REFERENCES routes(id) ON DELETE CASCADE,
@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS route_stops (
 CREATE INDEX IF NOT EXISTS idx_route_stops_route ON route_stops(route_id);
 CREATE INDEX IF NOT EXISTS idx_route_stops_stop ON route_stops(stop_id);
 
+-- Populando a Tabela com exemplos prévios
 INSERT INTO stops (name, latitude, longitude) VALUES
 ('Terminal Central', -23.550520, -46.633308),
 ('Av. Paulista - Estação Trianon', -23.561684, -46.655981),
