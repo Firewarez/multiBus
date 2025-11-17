@@ -17,6 +17,28 @@ CREATE TABLE IF NOT EXISTS login (
     data_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabela para Recarga de Cartão
+CREATE TABLE IF NOT EXISTS recarga_cartao (
+    id SERIAL PRIMARY KEY,
+    usuario_id INT REFERENCES usuario(id) ON DELETE SET NULL,
+    numero_cartao VARCHAR(20) NOT NULL,
+    cpf VARCHAR(14) NOT NULL,
+    nome_titular VARCHAR(100) NOT NULL,
+    valor_recarga DECIMAL(10,2) NOT NULL CHECK (valor_recarga > 0),
+    status VARCHAR(20) DEFAULT 'pendente' CHECK (status IN ('pendente', 'processando', 'concluido', 'falha')),
+    metodo_pagamento VARCHAR(50) NOT NULL CHECK (metodo_pagamento IN ('credito', 'debito', 'pix', 'boleto')),
+    ultimos_digitos_cartao VARCHAR(4),
+    transacao_id VARCHAR(100)
+);
+-- Tabela para Saldo do Cartão
+CREATE TABLE IF NOT EXISTS saldo_cartao (
+    id SERIAL PRIMARY KEY,
+    numero_cartao VARCHAR(20) UNIQUE NOT NULL,
+    cpf_titular VARCHAR(14) NOT NULL,
+    saldo_atual DECIMAL(10,2) DEFAULT 0.00 CHECK (saldo_atual >= 0),
+    ativo BOOLEAN DEFAULT true
+);
+
 -- Tabela de Paradas Favoritas
 CREATE TABLE IF NOT EXISTS paradafav (
     id SERIAL PRIMARY KEY,

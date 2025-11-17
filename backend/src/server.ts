@@ -7,6 +7,7 @@ import path from "path";
 import stopsRoutes from "./api/routes/stops.routes";
 import linesRoutes from "./api/routes/lines.routes";
 import routesRoutes from "./api/routes/routes.routes";
+import loginRoutes from "./api/routes/login.routes";
 
 dotenv.config();
 
@@ -22,10 +23,11 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
     customSiteTitle: "MultiBus API Documentation"
 }));
 
-//Rotas Principais dos Ônibus
-app.use("/stops", stopsRoutes);
-app.use("/lines", linesRoutes);
-app.use("/routes", routesRoutes);
+// Rotas principais
+app.use("/api/v1/stops", stopsRoutes);
+app.use("/api/v1/lines", linesRoutes);
+app.use("/api/v1/routes", routesRoutes);
+app.use("/api/v1/login", loginRoutes);
 
 // Teste de Rota Inicial com Tipagem em TY
 app.get("/", (req: Request, res: Response) => {
