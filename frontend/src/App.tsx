@@ -6,9 +6,9 @@ import Suporte from "./pages/Suporte";
 import Ajuda from "./pages/Ajuda";
 import TermosUso from "./pages/TermosUso";
 import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
-import MapaPrevisoes from "./pages/MapaPrevisoes";
 import RecargaCartao from "./pages/RecargaCartao";
 import PontosRecarga from "./pages/PontosRecarga";
+import MapaPrevisoes from "./pages/MapaPrevisoes";
 
 function App() {
   return (
@@ -21,9 +21,9 @@ function App() {
         <Route path="/ajuda" element={<Ajuda />} />
         <Route path="/termos-uso" element={<TermosUso />} />
         <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />
-        <Route path="/mapa-previsoes" element={<MapaPrevisoes />} />
         <Route path="/recarga-cartao" element={<RecargaCartao />} />
         <Route path="/pontos-recarga" element={<PontosRecarga />} />
+        <Route path="/mapa-previsoes" element={<MapaPrevisoes />} />
       </Routes>
     </BrowserRouter>
   );

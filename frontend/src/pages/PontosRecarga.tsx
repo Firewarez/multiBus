@@ -9,8 +9,8 @@ export default function PontosRecarga() {
 
   // LISTA DE PONTOS DE RECARGA
   const pontos = [
-    { id: "1", nome: "Terminal Integração Sul", bairro: "Valentina", endereco: "Av. Principal, 1200", lat: -7.15, lng: -34.85 },
-    { id: "2", nome: "Shopping Sul", bairro: "Bancários", endereco: "Rua Comerciante 88", lat: -7.13, lng: -34.83 },
+    { id: "1", nome: "Terminal Integração Sul", bairro: "Valentina", endereco: "Av. Mariangela Lucena Peixoto", lat: -7.20, lng: -34.84 },
+    { id: "2", nome: "Shopping Sul", bairro: "Bancários", endereco: "Rua Comerciante 88", lat: -7.14, lng: -34.84 },
     { id: "3", nome: "Estação Cabo Branco", bairro: "Altiplano", endereco: "Av. Cabo Branco, 200", lat: -7.12, lng: -34.80 },
     { id: "4", nome: "Terminal Integração Oeste", bairro: "Oitizeiro", endereco: "Rua Oitizeiro, 55", lat: -7.18, lng: -34.87 },
     { id: "5", nome: "Praça da Paz", bairro: "Miramar", endereco: "Praça Central", lat: -7.14, lng: -34.82 },

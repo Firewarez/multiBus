@@ -38,6 +38,7 @@ import {
   InfoOutlined,
 } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
+import { Bell, AlertTriangle, Clock, Info } from "lucide-react";  
 
 export default function Home() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -70,15 +71,6 @@ export default function Home() {
           MultiBus
         </Typography>
         <List>
-          <ListItem disablePadding component={Link} to="/mapa-previsoes">
-            <ListItemButton>
-              <ListItemIcon>
-                <Map className="text-white" />
-              </ListItemIcon>
-              <ListItemText primary="Mapa de Previsões" />
-            </ListItemButton>
-          </ListItem>
-
           <ListItem disablePadding component={Link} to="/recarga-cartao">
             <ListItemButton>
               <ListItemIcon>
@@ -103,6 +95,15 @@ export default function Home() {
                 <Policy className="text-white" />
               </ListItemIcon>
               <ListItemText primary="Política de Privacidade" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding component={Link} to="/mapa-previsoes">
+            <ListItemButton>
+              <ListItemIcon>
+                <Star className="text-white" />
+              </ListItemIcon>
+              <ListItemText primary="Mapa de Previsões" />
             </ListItemButton>
           </ListItem>
 
@@ -237,91 +238,104 @@ export default function Home() {
           />
         </div>
 
-        {/* Perfil + Linhas favoritas */}
-        <div className="flex flex-col lg:flex-row gap-6 mb-6">
-          {/* Card do perfil */}
-          <Card className="flex-1 shadow-md rounded-xl p-4 flex items-center gap-4">
-            <Avatar
-              src="https://i.imgur.com/4YQZ4ZC.png"
-              sx={{ width: 100, height: 100, borderRadius: "20px" }}
-            />
-            <div>
-              <Typography
-                variant="h6"
-                className="font-semibold text-green-700 mb-1"
+        {/* Perfil + Notificações */}
+<div className="flex flex-col lg:flex-row gap-6 mb-6">
+
+  {/* Card do perfil */}
+  <Card className="flex-1 shadow-md rounded-xl p-4 flex items-center gap-4">
+    <Avatar
+      src="https://i.imgur.com/4YQZ4ZC.png"
+      sx={{
+        width: 100,
+        height: 100,
+        borderRadius: "20px",
+      }}
+    />
+    <div>
+      <Typography
+        variant="h6"
+        className="font-semibold text-green-700 mb-1"
+      >
+        Arthur Barcelos
+      </Typography>
+      <Typography variant="body2">
+        arthurbarcelos04@gmail.com
+      </Typography>
+      <Typography variant="body2">(83) 98856-9012</Typography>
+    </div>
+  </Card>
+
+  {/* Notificações */}
+  <Card className="flex-1 shadow-md rounded-xl p-4">
+    <div className="flex items-center justify-between mb-3">
+      <Typography
+        variant="h6"
+        className="font-semibold text-green-700 flex items-center gap-2"
+      >
+        <Bell className="text-green-700" /> Notificações
+      </Typography>
+    </div>
+
+    {/* SOMENTE UM AVISO */}
+    <div className="space-y-4">
+      {[
+        {
+          linha: "Linha 301",
+          msg: "Atraso de 10 minutos devido ao trânsito intenso.",
+          tipo: "alerta",
+        },
+      ].map((notif, index) => {
+        const getStyle = () => {
+          switch (notif.tipo) {
+            case "alerta":
+              return {
+                icon: <Clock className="text-yellow-500" />,
+                badge: "Atraso",
+                badgeColor: "bg-yellow-600",
+                box: "border-yellow-500/40",
+              };
+            case "grave":
+              return {
+                icon: <AlertTriangle className="text-red-500" />,
+                badge: "Importante",
+                badgeColor: "bg-red-600",
+                box: "border-red-500/40",
+              };
+            default:
+              return {
+                icon: <Info className="text-blue-500" />,
+                badge: "Aviso",
+                badgeColor: "bg-blue-600",
+                box: "border-blue-500/40",
+              };
+          }
+        };
+
+        const style = getStyle();
+
+        return (
+          <div
+            key={index}
+            className={`border p-4 rounded-xl shadow-sm flex items-start gap-3 transition-all hover:scale-[1.02] hover:shadow-md ${style.box}`}
+          >
+            <div className="pt-1">{style.icon}</div>
+
+            <div className="flex-1">
+              <span
+                className={`px-2 py-1 text-xs text-white rounded-md ${style.badgeColor}`}
               >
-                Arthur Barcelos
-              </Typography>
-              <Typography variant="body2">
-                arthurbarcelos04@gmail.com
-              </Typography>
-              <Typography variant="body2">(83) 98856-9012</Typography>
-            </div>
-          </Card>
+                {style.badge}
+              </span>
 
-          {/* Favoritos */}
-          <Card className="flex-1 shadow-md rounded-xl p-4">
-            <div className="flex items-center justify-between mb-3">
-              <Typography
-                variant="h6"
-                className="font-semibold text-green-700 flex items-center"
-              >
-                <Star className="text-yellow-500 mr-1" /> Linhas Favoritas
-              </Typography>
-              <IconButton onClick={() => setOpenInfo(true)}>
-                <InfoOutlined className="text-green-700" />
-              </IconButton>
+              <p className="font-semibold mt-1 text-lg">{notif.linha}</p>
+              <p className="text-sm opacity-80">{notif.msg}</p>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {[
-                { nome: "120 - Parque do Sol / Geisel", status: "A caminho" },
-                { nome: "518 - Bancários / UFPB", status: "Em operação" },
-                { nome: "551 - Geisel / Mangabeira", status: "Na garagem" },
-                { nome: "1500 - Circular", status: "A caminho" },
-              ].map((linha) => (
-                <div
-                  key={linha.nome}
-                  className="bg-green-100 px-3 py-2 rounded-lg shadow flex items-center justify-between"
-                >
-                  <Typography
-                    variant="body2"
-                    className="text-green-800 font-medium"
-                  >
-                    {linha.nome}
-                  </Typography>
-                  <LocationOn
-                    className={`${
-                      linha.status === "A caminho"
-                        ? "text-green-600"
-                        : linha.status === "Em operação"
-                        ? "text-yellow-600"
-                        : "text-gray-500"
-                    }`}
-                  />
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
-
-        {/* Modal de legenda */}
-        <Dialog open={openInfo} onClose={() => setOpenInfo(false)}>
-          <DialogTitle>Legenda das Cores dos Ônibus</DialogTitle>
-          <DialogContent>
-            <ul className="list-disc pl-5 text-gray-700">
-              <li>
-                <span className="text-green-600 font-semibold">Verde</span> — Ônibus a caminho.
-              </li>
-              <li>
-                <span className="text-yellow-600 font-semibold">Amarelo</span> — Ônibus em operação.
-              </li>
-              <li>
-                <span className="text-gray-500 font-semibold">Cinza</span> — Ônibus na garagem.
-              </li>
-            </ul>
-          </DialogContent>
-        </Dialog>
+          </div>
+        );
+      })}
+    </div>
+  </Card>
+</div>
 
         {/* Botões interativos */}
         <div className="w-full grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-10">
