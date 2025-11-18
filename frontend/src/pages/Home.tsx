@@ -88,7 +88,7 @@ export default function Home() {
             </ListItemButton>
           </ListItem>
 
-          <ListItem disablePadding>
+          <ListItem disablePadding component={Link} to="/pontos-recarga">
             <ListItemButton>
               <ListItemIcon>
                 <EvStation className="text-white" />

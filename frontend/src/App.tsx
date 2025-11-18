@@ -8,6 +8,7 @@ import TermosUso from "./pages/TermosUso";
 import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
 import MapaPrevisoes from "./pages/MapaPrevisoes";
 import RecargaCartao from "./pages/RecargaCartao";
+import PontosRecarga from "./pages/PontosRecarga";
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
         <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />
         <Route path="/mapa-previsoes" element={<MapaPrevisoes />} />
         <Route path="/recarga-cartao" element={<RecargaCartao />} />
-
+        <Route path="/pontos-recarga" element={<PontosRecarga />} />
       </Routes>
     </BrowserRouter>
   );
