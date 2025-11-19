@@ -1,33 +1,31 @@
 import React, { useState } from "react";
 import {
   Box,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Typography,
-  Avatar,
+  Card,
+  CardContent,
   TextField,
   Button,
   IconButton,
+  Avatar,
+  Container,
+  Chip,
+  Fab,
+  Tooltip,
 } from "@mui/material";
 import {
-  Map,
-  CreditCard,
-  Policy,
-  Edit,
-  EvStation,
-  Menu as MenuIcon,
-  Close as CloseIcon,
   Brightness4,
   Brightness7,
+  ArrowBack,
+  Edit,
+  Save,
+  CheckCircle,
 } from "@mui/icons-material";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
 
 // Validação Zod
 const profileSchema = z.object({
@@ -56,282 +54,525 @@ type ProfileData = z.infer<typeof profileSchema>;
 
 export default function Perfil() {
   const [darkMode, setDarkMode] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<ProfileData>({
     resolver: zodResolver(profileSchema),
+    defaultValues: {
+      nome: "Arthur Barcelos",
+      email: "arthurbarcelos04@gmail.com",
+      telefone: "83988569012",
+      cidade: "João Pessoa",
+      uf: "PB",
+    },
   });
 
   const onSubmit = (data: ProfileData) => {
-    alert(`Perfil atualizado com sucesso! 🎉\n\n${JSON.stringify(data, null, 2)}`);
+    console.log("Dados salvos:", data);
+    setSaveSuccess(true);
+    setIsEditing(false);
+    setTimeout(() => setSaveSuccess(false), 3000);
   };
 
-  const drawerWidth = 260;
-  const toggleDrawer = () => setMobileOpen(!mobileOpen);
   const toggleDarkMode = () => setDarkMode(!darkMode);
-
-  const drawerContent = (
-    <div className="flex flex-col justify-between h-full p-4 bg-gradient-to-b from-[#C9DF8A] via-[#77AB59] to-[#36802D] rounded-r-[25px] text-white">
-      <div>
-        <Typography variant="h6" className="text-white font-bold mb-4">
-          MultiBus
-        </Typography>
-        <List>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <Map className="text-white" />
-              </ListItemIcon>
-              <ListItemText primary="Mapa de Previsões" />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <CreditCard className="text-white" />
-              </ListItemIcon>
-              <ListItemText primary="Recarregar Cartões" />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <EvStation className="text-white" />
-              </ListItemIcon>
-              <ListItemText primary="Pontos de Recarga" />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding component={Link} to="/">
-            <ListItemButton>
-              <ListItemIcon>
-                <Edit className="text-white" />
-              </ListItemIcon>
-              <ListItemText primary="Início" />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <Policy className="text-white" />
-              </ListItemIcon>
-              <ListItemText primary="Política de Privacidade" />
-            </ListItemButton>
-          </ListItem>
-        </List>
-      </div>
-
-      <Box className="flex items-center gap-2">
-        <Avatar src="https://i.imgur.com/4YQZ4ZC.png" />
-        <div className="flex flex-col leading-tight">
-          <Typography variant="body2" className="text-white font-semibold">
-            Arthur Barcelos
-          </Typography>
-          <Typography variant="caption" className="text-white">
-            João Pessoa, PB
-          </Typography>
-        </div>
-      </Box>
-    </div>
-  );
+  const handleEdit = () => setIsEditing(true);
+  const handleCancel = () => {
+    setIsEditing(false);
+    reset();
+  };
 
   return (
     <Box
       sx={{
-        display: "flex",
-        backgroundColor: darkMode ? "#1B1B1B" : "#E8F5E9",
         minHeight: "100vh",
-        color: darkMode ? "white" : "black",
+        backgroundColor: darkMode ? "#0f172a" : "#f8fafc",
+        color: darkMode ? "#f1f5f9" : "#1e293b",
+        transition: "all 0.4s ease-in-out",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      {/* Drawer lateral */}
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: "none", md: "block" },
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            borderRight: "none",
-            background: "transparent",
-            boxShadow: 3,
-          },
-        }}
-        open
-      >
-        {drawerContent}
-      </Drawer>
-
-      {/* Conteúdo principal */}
+      {/* Background decorativo */}
       <Box
-        component="main"
         sx={{
-          flexGrow: 1,
-          p: { xs: 2, md: 4 },
-          ml: { md: `${drawerWidth}px` },
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "30vh",
+          background: darkMode 
+            ? "linear-gradient(135deg, #059669 0%, #0ea5e9 100%)"
+            : "linear-gradient(135deg, #10b981 0%, #3b82f6 100%)",
+          opacity: 0.1,
+          zIndex: 0,
         }}
-      >
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            <IconButton
-              color="inherit"
-              onClick={toggleDrawer}
-              className="md:hidden bg-green-600 text-white hover:bg-green-700"
-            >
-              {mobileOpen ? <CloseIcon /> : <MenuIcon />}
-            </IconButton>
-            <Typography
-              variant="h5"
-              className={`font-bold ${
-                darkMode ? "text-green-200" : "text-green-800"
-              }`}
-            >
-              Editar Perfil
-            </Typography>
-          </div>
+      />
 
-          <IconButton onClick={toggleDarkMode}>
-            {darkMode ? (
-              <Brightness7 className="text-yellow-400" />
-            ) : (
-              <Brightness4 className="text-gray-700" />
-            )}
-          </IconButton>
-        </div>
-
-        {/* Card principal */}
-        <Box className="bg-[#F3F8EC] rounded-xl shadow-md p-6">
-          {/* Cabeçalho do perfil */}
-          <div className="flex items-center gap-6 mb-6">
-            <Avatar
-              src="https://i.imgur.com/4YQZ4ZC.png"
-              sx={{ width: 120, height: 120, borderRadius: "20px" }}
-            />
+      <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1, py: 4 }}>
+        {/* Cabeçalho */}
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="flex items-center justify-between mb-8"
+        >
+          <div className="flex items-center gap-4">
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Edit sx={{ fontSize: 32, color: darkMode ? "#22c55e" : "#10b981" }} />
+            </motion.div>
             <div>
-              <Typography variant="h6" className="font-semibold text-green-800">
-                Arthur Barcelos
+              <Typography
+                variant="h3"
+                className={`font-bold ${darkMode ? "text-green-300" : "text-green-700"}`}
+              >
+                Meu Perfil
               </Typography>
-              <Typography variant="body2" className="text-green-600">
-                João Pessoa
-              </Typography>
-              <Typography variant="body2" className="text-green-600">
-                Usuário: arthurbarcelos04@gmail.com
-              </Typography>
-              <Typography variant="body2" className="text-green-600">
-                Celular: (83) 98856-9012
-              </Typography>
-              <Typography variant="body2" className="text-green-600">
-                Status: Ativo
+              <Typography
+                variant="subtitle1"
+                className={darkMode ? "text-slate-300" : "text-slate-600"}
+              >
+                Gerencie suas informações pessoais
               </Typography>
             </div>
           </div>
 
-          <hr className="border-green-300 mb-4" />
+          <div className="flex items-center gap-2">
+            <Tooltip title={darkMode ? "Modo claro" : "Modo escuro"}>
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <IconButton 
+                  onClick={toggleDarkMode}
+                  sx={{
+                    backgroundColor: darkMode ? "rgba(34, 197, 94, 0.1)" : "rgba(100, 116, 139, 0.1)",
+                    color: darkMode ? "#22c55e" : "#64748b",
+                    '&:hover': {
+                      backgroundColor: darkMode ? "rgba(34, 197, 94, 0.2)" : "rgba(100, 116, 139, 0.2)",
+                    }
+                  }}
+                >
+                  {darkMode ? <Brightness7 /> : <Brightness4 />}
+                </IconButton>
+              </motion.div>
+            </Tooltip>
+          </div>
+        </motion.div>
 
-          {/* Formulário */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Linha 1 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <TextField
-                label="Nome Completo"
-                fullWidth
-                variant="outlined"
-                {...register("nome")}
-                error={!!errors.nome}
-                helperText={errors.nome?.message}
-              />
-              <TextField
-                label="E-mail"
-                fullWidth
-                variant="outlined"
-                {...register("email")}
-                error={!!errors.email}
-                helperText={errors.email?.message}
-              />
-            </div>
+        <div className="grid lg:grid-cols-4 gap-8">
+          {/* Coluna lateral */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="lg:col-span-1"
+          >
+            <Card
+              className="shadow-xl rounded-2xl sticky top-8"
+              sx={{
+                background: darkMode
+                  ? "linear-gradient(135deg, #1e293b 0%, #334155 100%)"
+                  : "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+                border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}`,
+              }}
+            >
+              <CardContent className="p-6 text-center">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="mb-4"
+                >
+                  <Avatar
+                    src="https://i.imgur.com/4YQZ4ZC.png"
+                    sx={{
+                      width: 120,
+                      height: 120,
+                      borderRadius: "20px",
+                      margin: "0 auto",
+                      border: `3px solid ${darkMode ? "#22c55e" : "#10b981"}`,
+                    }}
+                  />
+                </motion.div>
 
-            {/* Linha 2 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              <TextField
-                label="CPF"
-                fullWidth
-                variant="outlined"
-                {...register("cpf")}
-                error={!!errors.cpf}
-                helperText={errors.cpf?.message}
-              />
+                <Typography 
+                  variant="h6" 
+                  className={`font-bold mb-2 ${darkMode ? "text-green-400" : "text-green-700"}`}
+                >
+                  Arthur Barcelos
+                </Typography>
 
-              <TextField
-                label="Telefone"
-                fullWidth
-                variant="outlined"
-                {...register("telefone")}
-                error={!!errors.telefone}
-                helperText={errors.telefone?.message}
-              />
+                <Chip
+                  icon={<CheckCircle sx={{ fontSize: 16 }} />}
+                  label="Conta Verificada"
+                  color="success"
+                  variant="outlined"
+                  size="small"
+                  sx={{ mb: 3 }}
+                />
 
-              <TextField
-                label="Cidade"
-                fullWidth
-                variant="outlined"
-                {...register("cidade")}
-              />
-              <TextField
-                label="UF"
-                fullWidth
-                variant="outlined"
-                {...register("uf")}
-              />
-            </div>
+                <div className="space-y-3 text-left">
+                  <div>
+                    <Typography variant="caption" className={darkMode ? "text-slate-400" : "text-slate-600"}>
+                      Localização
+                    </Typography>
+                    <Typography variant="body2" className={darkMode ? "text-slate-200" : "text-slate-800"}>
+                      João Pessoa, PB
+                    </Typography>
+                  </div>
 
-            {/* Linha 3 - Endereço */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-              <TextField
-                label="Rua / Avenida"
-                fullWidth
-                variant="outlined"
-                {...register("endereco")}
-              />
-              <TextField
-                label="Número"
-                fullWidth
-                variant="outlined"
-                {...register("numero")}
-              />
-              <TextField
-                label="Bairro"
-                fullWidth
-                variant="outlined"
-                {...register("bairro")}
-              />
-              <TextField
-                label="CEP"
-                fullWidth
-                variant="outlined"
-                {...register("cep")}
-              />
-            </div>
+                  <div>
+                    <Typography variant="caption" className={darkMode ? "text-slate-400" : "text-slate-600"}>
+                      Membro desde
+                    </Typography>
+                    <Typography variant="body2" className={darkMode ? "text-slate-200" : "text-slate-800"}>
+                      Janeiro 2024
+                    </Typography>
+                  </div>
 
-            {/* Botão */}
-            <div className="flex justify-end">
-              <Button
-                type="submit"
-                variant="contained"
-                className="!bg-[#36802D] hover:!bg-[#2e6b25] text-white font-semibold rounded-xl px-8 py-3"
-              >
-                Salvar
-              </Button>
-            </div>
-          </form>
-        </Box>
-      </Box>
+                  <div>
+                    <Typography variant="caption" className={darkMode ? "text-slate-400" : "text-slate-600"}>
+                      Status
+                    </Typography>
+                    <Typography variant="body2" className={darkMode ? "text-slate-200" : "text-slate-800"}>
+                      <span className="text-green-500 font-semibold">Ativo</span>
+                    </Typography>
+                  </div>
+                </div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="mt-6"
+                >
+                  <Button
+                    fullWidth
+                    startIcon={<Edit />}
+                    onClick={handleEdit}
+                    disabled={isEditing}
+                    variant="outlined"
+                    sx={{
+                      color: darkMode ? "#e2e8f0" : "#475569",
+                      borderColor: darkMode ? "#475569" : "#cbd5e1",
+                      '&:hover': {
+                        borderColor: darkMode ? "#22c55e" : "#10b981",
+                        backgroundColor: darkMode ? "rgba(34, 197, 94, 0.1)" : "rgba(16, 185, 129, 0.1)",
+                      },
+                      '&:disabled': {
+                        borderColor: darkMode ? "#374151" : "#d1d5db",
+                        color: darkMode ? "#6b7280" : "#9ca3af",
+                      }
+                    }}
+                  >
+                    Editar Perfil
+                  </Button>
+                </motion.div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Formulário principal */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            className="lg:col-span-3"
+          >
+            <Card
+              className="shadow-2xl rounded-3xl overflow-hidden"
+              sx={{
+                background: darkMode
+                  ? "linear-gradient(135deg, #1e293b 0%, #334155 100%)"
+                  : "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+                border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}`,
+              }}
+            >
+              <CardContent className="p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <Typography
+                    variant="h4"
+                    className={`font-bold ${darkMode ? "text-green-400" : "text-green-700"}`}
+                  >
+                    Informações Pessoais
+                  </Typography>
+
+                  <AnimatePresence>
+                    {saveSuccess && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                      >
+                        <Chip
+                          icon={<CheckCircle />}
+                          label="Alterações salvas!"
+                          color="success"
+                          variant="filled"
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                  {/* Linha 1 */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <motion.div whileHover={{ scale: 1.01 }}>
+                      <TextField
+                        label="Nome Completo"
+                        fullWidth
+                        variant="outlined"
+                        disabled={!isEditing}
+                        {...register("nome")}
+                        error={!!errors.nome}
+                        helperText={errors.nome?.message}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'white',
+                          }
+                        }}
+                      />
+                    </motion.div>
+
+                    <motion.div whileHover={{ scale: 1.01 }}>
+                      <TextField
+                        label="E-mail"
+                        fullWidth
+                        variant="outlined"
+                        disabled={!isEditing}
+                        {...register("email")}
+                        error={!!errors.email}
+                        helperText={errors.email?.message}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'white',
+                          }
+                        }}
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* Linha 2 */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <motion.div whileHover={{ scale: 1.01 }}>
+                      <TextField
+                        label="CPF"
+                        fullWidth
+                        variant="outlined"
+                        disabled={!isEditing}
+                        {...register("cpf")}
+                        error={!!errors.cpf}
+                        helperText={errors.cpf?.message}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'white',
+                          }
+                        }}
+                      />
+                    </motion.div>
+
+                    <motion.div whileHover={{ scale: 1.01 }}>
+                      <TextField
+                        label="Telefone"
+                        fullWidth
+                        variant="outlined"
+                        disabled={!isEditing}
+                        {...register("telefone")}
+                        error={!!errors.telefone}
+                        helperText={errors.telefone?.message}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'white',
+                          }
+                        }}
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* Linha 3 - Endereço */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <motion.div whileHover={{ scale: 1.01 }}>
+                      <TextField
+                        label="Cidade"
+                        fullWidth
+                        variant="outlined"
+                        disabled={!isEditing}
+                        {...register("cidade")}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'white',
+                          }
+                        }}
+                      />
+                    </motion.div>
+
+                    <motion.div whileHover={{ scale: 1.01 }}>
+                      <TextField
+                        label="UF"
+                        fullWidth
+                        variant="outlined"
+                        disabled={!isEditing}
+                        {...register("uf")}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'white',
+                          }
+                        }}
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* Linha 4 - Endereço detalhado */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <motion.div whileHover={{ scale: 1.01 }} className="md:col-span-2">
+                      <TextField
+                        label="Rua / Avenida"
+                        fullWidth
+                        variant="outlined"
+                        disabled={!isEditing}
+                        {...register("endereco")}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'white',
+                          }
+                        }}
+                      />
+                    </motion.div>
+
+                    <motion.div whileHover={{ scale: 1.01 }}>
+                      <TextField
+                        label="Número"
+                        fullWidth
+                        variant="outlined"
+                        disabled={!isEditing}
+                        {...register("numero")}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'white',
+                          }
+                        }}
+                      />
+                    </motion.div>
+
+                    <motion.div whileHover={{ scale: 1.01 }}>
+                      <TextField
+                        label="CEP"
+                        fullWidth
+                        variant="outlined"
+                        disabled={!isEditing}
+                        {...register("cep")}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'white',
+                          }
+                        }}
+                      />
+                    </motion.div>
+                  </div>
+
+                  <motion.div whileHover={{ scale: 1.01 }} className="md:col-span-2">
+                    <TextField
+                      label="Bairro"
+                      fullWidth
+                      variant="outlined"
+                      disabled={!isEditing}
+                      {...register("bairro")}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                          backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'white',
+                        }
+                      }}
+                    />
+                  </motion.div>
+
+                  {/* Botões de ação */}
+                  {isEditing && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex gap-4 justify-end pt-4"
+                    >
+                      <Button
+                        onClick={handleCancel}
+                        variant="outlined"
+                        sx={{
+                          color: darkMode ? "#e2e8f0" : "#475569",
+                          borderColor: darkMode ? "#475569" : "#cbd5e1",
+                          borderRadius: 2,
+                          px: 4,
+                          '&:hover': {
+                            borderColor: darkMode ? "#ef4444" : "#dc2626",
+                            backgroundColor: darkMode ? "rgba(239, 68, 68, 0.1)" : "rgba(220, 38, 38, 0.1)",
+                          }
+                        }}
+                      >
+                        Cancelar
+                      </Button>
+
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button
+                          type="submit"
+                          startIcon={<Save />}
+                          variant="contained"
+                          sx={{
+                            background: "linear-gradient(135deg, #10b981 0%, #3b82f6 100%)",
+                            color: "white",
+                            borderRadius: 2,
+                            px: 4,
+                            '&:hover': {
+                              background: "linear-gradient(135deg, #059669 0%, #2563eb 100%)",
+                            }
+                          }}
+                        >
+                          Salvar Alterações
+                        </Button>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </Container>
+
+      {/* FAB para voltar */}
+      <motion.div
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.6, type: "spring" }}
+        className="fixed bottom-6 left-6"
+      >
+        <Tooltip title="Voltar">
+          <Fab
+            onClick={() => navigate(-1)}
+            sx={{
+              backgroundColor: darkMode ? "#22c55e" : "#10b981",
+              color: "white",
+              '&:hover': {
+                backgroundColor: darkMode ? "#16a34a" : "#059669",
+              }
+            }}
+          >
+            <ArrowBack />
+          </Fab>
+        </Tooltip>
+      </motion.div>
     </Box>
   );
 }
