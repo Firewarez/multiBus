@@ -44,149 +44,333 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-// Dados reais (exemplo) — linhas + posição aproximada
+// Novas linhas atualizadas
 const LINHAS_INICIAIS = [
   {
-    id: "301",
-    nome: "301 – Mangabeira / Centro",
-    desc: "Atende Mangabeira até o Centro",
-    lat: -7.1298,
-    lng: -34.8656,
-    status: "A caminho",
+    id: "110",
+    nome: "110 – Jardim Planalto",
+    desc: "Jardim Planalto ↔ Centro",
+    lat: -7.1549,
+    lng: -34.8954,
+    status: "Em operação",
     cor: "#FF6B35",
-  },
-  {
-    id: "302",
-    nome: "302 – Mangabeira / Epitácio",
-    desc: "Passa na Av. Epitácio Pessoa",
-    lat: -7.1152,
-    lng: -34.8611,
-    status: "Em operação",
-    cor: "#4ECDC4",
-  },
-  {
-    id: "303",
-    nome: "303 – Circular",
-    desc: "Circular Mangabeira ↔ Centro",
-    lat: -7.1209,
-    lng: -34.8801,
-    status: "Na garagem",
-    cor: "#45B7D1",
-  },
-  {
-    id: "507",
-    nome: "520 – Altiplano / Centro",
-    desc: "Linha movimentada do Altiplano",
-    lat: -7.1361,
-    lng: -34.8262,
-    status: "A caminho",
-    cor: "#96CEB4",
-  },
-  {
-    id: "5600",
-    nome: "5600 – Integração Sul",
-    desc: "Integra integração sul",
-    lat: -7.1411,
-    lng: -34.8608,
-    status: "Em operação",
-    cor: "#FECA57",
-  },
-  {
-    id: "510",
-    nome: "510 – Tambaú / Cabo Branco",
-    desc: "Atende Tambaú e Cabo Branco",
-    lat: -7.1160,
-    lng: -34.8318,
-    status: "A caminho",
-    cor: "#FF9FF3",
-  },
-  {
-    id: "1500",
-    nome: "1500 – Circular",
-    desc: "Rota circular",
-    lat: -7.1185,
-    lng: -34.8450,
-    status: "Em operação",
-    cor: "#54A0FF",
-  },
-  {
-    id: "2515",
-    nome: "2515 – Mangabeira",
-    desc: "Atende Mangabeira",
-    lat: -7.1250,
-    lng: -34.8480,
-    status: "Na garagem",
-    cor: "#5F27CD",
   },
   {
     id: "118",
     nome: "118 – Paratibe",
-    desc: "Atende Paratibe",
-    lat: -7.1100,
-    lng: -34.8800,
+    desc: "Paratibe ↔ Centro",
+    lat: -7.1991,
+    lng: -34.8488,
+    status: "Em operação",
+    cor: "#4ECDC4",
+  },
+  {
+    id: "120",
+    nome: "120 – Parque do Sol",
+    desc: "Parque do Sol ↔ Centro",
+    lat: -7.2079,
+    lng: -34.8506,
+    status: "A caminho",
+    cor: "#45B7D1",
+  },
+  {
+    id: "301",
+    nome: "301 – Mangabeira / D Pedro II",
+    desc: "Mangabeira ↔ D. Pedro II",
+    lat: -7.1885,
+    lng: -34.8390,
+    status: "A caminho",
+    cor: "#96CEB4",
+  },
+  {
+    id: "302",
+    nome: "302 – Cidade Verde",
+    desc: "Cidade Verde ↔ Centro",
+    lat: -7.1786,
+    lng: -34.8369,
+    status: "Em operação",
+    cor: "#FECA57",
+  },
+  {
+    id: "303",
+    nome: "303 – Cidade Verde / D Pedro II",
+    desc: "Cidade Verde ↔ D. Pedro II",
+    lat: -7.1446,
+    lng: -34.8508,
+    status: "Em operação",
+    cor: "#FF9FF3",
+  },
+  {
+    id: "510",
+    nome: "510 – Tambaú",
+    desc: "Tambaú ↔ Centro",
+    lat: -7.1194,
+    lng: -34.8273,
+    status: "A caminho",
+    cor: "#54A0FF",
+  },
+  {
+    id: "518",
+    nome: "518 – Bancários / Epitácio",
+    desc: "Bancários ↔ Epitácio Pessoa",
+    lat: -7.1547,
+    lng: -34.8386,
+    status: "Em operação",
+    cor: "#5F27CD",
+  },
+  {
+    id: "1500",
+    nome: "1500 – Circular",
+    desc: "Circular Centro",
+    lat: -7.1721,
+    lng: -34.8976,
     status: "Em operação",
     cor: "#00D2D3",
   },
   {
-    id: "003",
-    nome: "003 – Jaguaribe",
-    desc: "Rota Jaguaribe",
-    lat: -7.1234,
-    lng: -34.8460,
-    status: "Em operação",
+    id: "1519",
+    nome: "1519 – Valentina / Cruz das Armas",
+    desc: "Valentina ↔ Cruz das Armas",
+    lat: -7.1987,
+    lng: -34.8418,
+    status: "A caminho",
     cor: "#FF9F43",
   },
+  {
+    id: "2300",
+    nome: "2300 – Circular",
+    desc: "Circular Zona Norte",
+    lat: -7.1684,
+    lng: -34.8743,
+    status: "Em operação",
+    cor: "#9B59B6",
+  },
+  {
+    id: "2515",
+    nome: "2515 – Mangabeira / Cristo",
+    desc: "Mangabeira ↔ Cristo Redentor",
+    lat: -7.1648,
+    lng: -34.8619,
+    status: "Na garagem",
+    cor: "#1ABC9C",
+  },
+  {
+    id: "3200",
+    nome: "3200 – Circular",
+    desc: "Circular Zona Sul",
+    lat: -7.1339,
+    lng: -34.8600,
+    status: "Em operação",
+    cor: "#34495E",
+  },
+  {
+    id: "5120",
+    nome: "5120 – Valentina / Epitácio",
+    desc: "Valentina ↔ Epitácio Pessoa",
+    lat: -7.1329,
+    lng: -34.8467,
+    status: "A caminho",
+    cor: "#E74C3C",
+  },
+  {
+    id: "5210",
+    nome: "5210 – Mangabeira / Epitácio",
+    desc: "Mangabeira ↔ Epitácio Pessoa",
+    lat: -7.1196,
+    lng: -34.8590,
+    status: "Em operação",
+    cor: "#3498DB",
+  },
+  {
+    id: "5100",
+    nome: "5100 – Circular",
+    desc: "Circular Litorânea",
+    lat: -7.1818,
+    lng: -34.8598,
+    status: "A caminho",
+    cor: "#F39C12",
+  },
+  {
+    id: "5600",
+    nome: "5600 – Mangabeira / Shopping",
+    desc: "Mangabeira ↔ Shopping",
+    lat: -7.0975,
+    lng: -34.8404,
+    status: "Em operação",
+    cor: "#27AE60",
+  },
+  {
+    id: "9901",
+    nome: "9901 – Shopping / Valentina",
+    desc: "Shopping ↔ Valentina",
+    lat: -7.1640,
+    lng: -34.8264,
+    status: "A caminho",
+    cor: "#8E44AD",
+  }
 ];
 
-// Dados das paradas de ônibus
+// Paradas de ônibus expandidas
 const PARADAS = [
   {
     id: "p1",
-    nome: "Parada Centro - Av. Epitácio Pessoa",
-    lat: -7.1152,
-    lng: -34.8611,
-    linhas: ["301", "302", "510"],
-    movimentacao: "alta"
+    nome: "Terminal Central - Centro",
+    lat: -7.1183,
+    lng: -34.8799,
+    linhas: ["301", "302", "510", "518", "1500"],
+    movimentacao: "muito alta"
   },
   {
     id: "p2",
-    nome: "Parada Mangabeira - Terminal",
-    lat: -7.1298,
-    lng: -34.8656,
-    linhas: ["301", "302", "303", "2515"],
+    nome: "Mangabeira",
+    lat: -7.1727,
+    lng: -34.8400,
+    linhas: ["301", "303", "2515", "5210", "5600"],
     movimentacao: "muito alta"
   },
   {
     id: "p3",
-    nome: "Parada Altiplano",
-    lat: -7.1361,
-    lng: -34.8262,
-    linhas: ["507", "5600"],
-    movimentacao: "media"
+    nome: "Av. Epitácio",
+    lat: -7.1193,
+    lng: -34.8415,
+    linhas: ["518", "510", "5120", "5210"],
+    movimentacao: "alta"
   },
   {
     id: "p4",
-    nome: "Parada Tambaú",
-    lat: -7.1160,
-    lng: -34.8318,
-    linhas: ["510", "1500"],
+    nome: "Shopping Tambiá",
+    lat: -7.1163,
+    lng: -34.8799,
+    linhas: ["510", "1500", "518"],
     movimentacao: "alta"
   },
   {
     id: "p5",
-    nome: "Parada Jaguaribe",
-    lat: -7.1234,
-    lng: -34.8460,
-    linhas: ["003", "1500", "2515"],
+    nome: "Cruz das Armas",
+    lat: -7.1436,
+    lng: -34.8910,
+    linhas: ["120", "5100", "5120"],
     movimentacao: "media"
   },
   {
     id: "p6",
-    nome: "Parada Paratibe",
-    lat: -7.1100,
-    lng: -34.8800,
-    linhas: ["118", "303"],
+    nome: "Valentina Figueiredo",
+    lat: -7.2063,
+    lng: -34.8439,
+    linhas: ["1519", "118", "9901", "3200"],
+    movimentacao: "media"
+  },
+  {
+    id: "p7",
+    nome: "Cidade Verde",
+    lat: -7.1794,
+    lng: -34.8298,
+    linhas: ["302", "303"],
+    movimentacao: "alta"
+  },
+  {
+    id: "p8",
+    nome: "Jardim Planalto",
+    lat: -7.1589,
+    lng: -34.8976,
+    linhas: ["110"],
+    movimentacao: "media"
+  },
+  {
+    id: "p9",
+    nome: "Parque do Sol - Jampa Shopping",
+    lat: -7.2134,
+    lng: -34.8464,
+    linhas: ["120"],
+    movimentacao: "media"
+  },
+  {
+    id: "p10",
+    nome: "Paratibe",
+    lat: -7.2068,
+    lng: -34.8382,
+    linhas: ["118"],
     movimentacao: "baixa"
+  },
+  {
+    id: "p11",
+    nome: "Manaíra Shopping",
+    lat: -7.0977,
+    lng: -34.8446,
+    linhas: ["5100", "510", "518"],
+    movimentacao: "alta"
+  },
+  {
+    id: "p12",
+    nome: "Mangabeira Shopping",
+    lat: -7.1631,
+    lng: -34.8312,
+    linhas: ["5600", "9901", "302"],
+    movimentacao: "alta"
+  },
+  {
+    id: "p13",
+    nome: "Cristo Redentor",
+    lat: -7.1660,
+    lng: -34.8720,
+    linhas: ["2515", "2300"],
+    movimentacao: "media"
+  },
+  {
+    id: "p14",
+    nome: "Bessa",
+    lat: -7.0757,
+    lng: -34.8378,
+    linhas: ["510", "5100"],
+    movimentacao: "media"
+  },
+  {
+    id: "p15",
+    nome: "Alto do Mateus",
+    lat: -7.1426,
+    lng: -34.9106,
+    linhas: ["1500"],
+    movimentacao: "media"
+  },
+  {
+    id: "p16",
+    nome: "José Américo - Super Fácil",
+    lat: -7.1667,
+    lng: -34.8602,
+    linhas: ["5120"],
+    movimentacao: "media"
+  },
+  {
+    id: "p17",
+    nome: "Água Fria - Unipê",
+    lat: -7.1572,
+    lng: -34.8577,
+    linhas: ["1519"],
+    movimentacao: "media"
+  },
+  {
+    id: "p18",
+    nome: "Bancários - Shopping Sul",
+    lat: -7.1485,
+    lng: -34.8432,
+    linhas: ["3200", "5600", "5100"],
+    movimentacao: "media"
+  },
+  {
+    id: "p19",
+    nome: "Ernesto Geisel - Cidade da Polícia",
+    lat: -7.1711,
+    lng: -34.8741,
+    linhas: ["3200", "120", "118"],
+    movimentacao: "media"
+  },
+  {
+    id: "p20",
+    nome: "Grotão - Feira",
+    lat: -7.1847,
+    lng: -34.8830,
+    linhas: ["1500"],
+    movimentacao: "media"
   }
 ];
 
@@ -199,16 +383,24 @@ interface TempoConfig {
 // Função para simular tempo de chegada
 const simularTempoChegada = (linhaId: string): number => {
   const tempos: { [key: string]: TempoConfig } = {
+    "110": { min: 8, max: 20 },
+    "118": { min: 12, max: 25 },
+    "120": { min: 6, max: 18 },
     "301": { min: 5, max: 15 },
-    "302": { min: 8, max: 20 },
-    "303": { min: 12, max: 25 },
-    "507": { min: 3, max: 10 },
-    "5600": { min: 7, max: 18 },
-    "510": { min: 2, max: 8 },
-    "1500": { min: 10, max: 22 },
-    "2515": { min: 15, max: 30 },
-    "118": { min: 6, max: 16 },
-    "003": { min: 4, max: 12 }
+    "302": { min: 7, max: 17 },
+    "303": { min: 10, max: 22 },
+    "510": { min: 3, max: 10 },
+    "518": { min: 5, max: 12 },
+    "1500": { min: 8, max: 20 },
+    "1519": { min: 6, max: 16 },
+    "2300": { min: 10, max: 24 },
+    "2515": { min: 8, max: 19 },
+    "3200": { min: 12, max: 28 },
+    "5120": { min: 4, max: 11 },
+    "5210": { min: 7, max: 16 },
+    "5100": { min: 9, max: 21 },
+    "5600": { min: 5, max: 14 },
+    "9901": { min: 6, max: 15 }
   };
   
   const config = tempos[linhaId] || { min: 5, max: 15 };
@@ -492,13 +684,13 @@ export default function LinhasFavoritas() {
                     variant="h4" 
                     className={`font-bold ${darkMode ? "text-green-300" : "text-green-700"}`}
                   >
-                    Linhas de Ônibus
+                    Mapa de Previsões
                   </Typography>
                   <Typography 
                     variant="body2" 
                     className={darkMode ? "text-slate-300" : "text-slate-600"}
                   >
-                    Encontre as melhores rotas e horários
+                    {linhas.length} linhas disponíveis • {PARADAS.length} paradas
                   </Typography>
                 </div>
               </div>
@@ -726,10 +918,10 @@ export default function LinhasFavoritas() {
                           </div>
                           <div className="mb-3">
                             <Typography variant="body2" className={darkMode ? "text-slate-300" : "text-gray-600"}>
-                              Linhas que passam aqui:
+                              {parada.linhas.length} linhas passam aqui
                             </Typography>
                             <div className="flex flex-wrap gap-1 mt-2">
-                              {parada.linhas.map((linhaId: string) => {
+                              {parada.linhas.slice(0, 4).map((linhaId: string) => {
                                 const linha = linhas.find(l => l.id === linhaId);
                                 return linha ? (
                                   <Chip 
@@ -744,6 +936,13 @@ export default function LinhasFavoritas() {
                                   />
                                 ) : null;
                               })}
+                              {parada.linhas.length > 4 && (
+                                <Chip 
+                                  label={`+${parada.linhas.length - 4}`}
+                                  size="small"
+                                  variant="outlined"
+                                />
+                              )}
                             </div>
                           </div>
                           <motion.button
@@ -1049,7 +1248,7 @@ export default function LinhasFavoritas() {
                       Próximas chegadas:
                     </Typography>
                     <List>
-                      {paradaSelecionada?.linhas.map((linhaId: string, index: number) => {
+                      {paradaSelecionada?.linhas.slice(0, 4).map((linhaId: string, index: number) => {
                         const linha = linhas.find(l => l.id === linhaId);
                         const tempo = temposChegada[linhaId];
                         
@@ -1115,6 +1314,15 @@ export default function LinhasFavoritas() {
                         );
                       })}
                     </List>
+                    {paradaSelecionada && paradaSelecionada.linhas.length > 4 && (
+                      <Typography 
+                        variant="caption" 
+                        className="text-center block mt-2"
+                        sx={{ color: darkMode ? "#94a3b8" : "text.secondary" }}
+                      >
+                        + {paradaSelecionada.linhas.length - 4} outras linhas passam por aqui
+                      </Typography>
+                    )}
                   </>
                 )}
               </DialogContent>

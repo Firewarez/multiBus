@@ -287,7 +287,7 @@ export default function Home() {
       tempo: "Há 15 min"
     },
     {
-      linha: "Linha 201",
+      linha: "Linha 118",
       msg: "Operação normalizada após problemas técnicos.",
       tipo: "normal",
       tempo: "Há 1 hora"
