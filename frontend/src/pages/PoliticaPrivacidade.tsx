@@ -628,6 +628,7 @@ export default function PoliticaPrivacidade() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 1.2, type: "spring" }}
         className="fixed bottom-6 left-6"
+        style={{ zIndex: 9999 }}
       >
         <Tooltip title="Voltar para o aplicativo">
           <Fab

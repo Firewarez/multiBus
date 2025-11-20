@@ -419,6 +419,7 @@ export default function TermosUso() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 1.4, type: "spring" }}
         className="fixed bottom-6 left-6"
+        style={{ zIndex: 9999 }}
       >
         <Tooltip title="Voltar">
           <Fab
