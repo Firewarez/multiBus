@@ -54,7 +54,7 @@ export default function PoliticaPrivacidade() {
 
   const cards = [
     {
-      title: "🔒 Coleta de Dados",
+      title: "Coleta de Dados",
       icon: <Storage sx={{ fontSize: 24 }} />,
       text: `O MultiBus coleta apenas informações essenciais para fornecer os melhores serviços de transporte. Coletamos dados como nome, email, localização aproximada e histórico de buscas para personalizar sua experiência e melhorar nossos serviços.`,
       details: [
@@ -65,7 +65,7 @@ export default function PoliticaPrivacidade() {
       ]
     },
     {
-      title: "🎯 Uso das Informações",
+      title: "Uso das Informações",
       icon: <Public sx={{ fontSize: 24 }} />,
       text: `Utilizamos seus dados exclusivamente para otimizar sua experiência no aplicativo. Desenvolvemos rotas personalizadas, mostramos linhas relevantes e melhoramos continuamente nossos serviços com base no feedback e padrões de uso.`,
       details: [
@@ -76,7 +76,7 @@ export default function PoliticaPrivacidade() {
       ]
     },
     {
-      title: "🛡️ Segurança e Proteção",
+      title: "Segurança e Proteção",
       icon: <Security sx={{ fontSize: 24 }} />,
       text: `Implementamos medidas robustas de segurança para proteger seus dados. Utilizamos criptografia de ponta a ponta, autenticação segura e seguimos as melhores práticas do mercado para garantir a privacidade das suas informações.`,
       details: [
@@ -87,7 +87,7 @@ export default function PoliticaPrivacidade() {
       ]
     },
     {
-      title: "👥 Compartilhamento",
+      title: "Compartilhamento",
       icon: <Share sx={{ fontSize: 24 }} />,
       text: `Seus dados pessoais nunca são compartilhados com terceiros sem seu consentimento explícito. Trabalhamos apenas com parceiros que seguem os mesmos rigorosos padrões de segurança e privacidade.`,
       details: [
@@ -98,7 +98,7 @@ export default function PoliticaPrivacidade() {
       ]
     },
     {
-      title: "📊 Seus Direitos",
+      title: "Seus Direitos",
       icon: <VerifiedUser sx={{ fontSize: 24 }} />,
       text: `Você tem total controle sobre seus dados. Pode acessar, corrigir, exportar ou excluir suas informações a qualquer momento através das configurações do aplicativo ou entrando em contato com nossa equipe.`,
       details: [
@@ -403,7 +403,7 @@ export default function PoliticaPrivacidade() {
                   variant="h6" 
                   className={`font-bold mb-4 ${darkMode ? "text-green-400" : "text-green-700"}`}
                 >
-                  📋 Índice Rápido
+                  Índice Rápido
                 </Typography>
 
                 <div className="space-y-2">
@@ -447,7 +447,7 @@ export default function PoliticaPrivacidade() {
                   variant="h6" 
                   className={`font-bold mb-3 ${darkMode ? "text-green-400" : "text-green-700"}`}
                 >
-                  ⚡ Ações Rápidas
+                  Ações Rápidas
                 </Typography>
 
                 <div className="space-y-2">
@@ -503,7 +503,7 @@ export default function PoliticaPrivacidade() {
             variant="h4" 
             className={`font-bold text-center mb-8 ${darkMode ? "text-green-400" : "text-green-700"}`}
           >
-            ❓ Perguntas Frequentes
+            Perguntas Frequentes
           </Typography>
 
           <div className="space-y-3">
