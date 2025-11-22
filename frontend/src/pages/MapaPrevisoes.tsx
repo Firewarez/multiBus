@@ -762,7 +762,7 @@ export default function LinhasFavoritas() {
                     variant="body2"
                     className={darkMode ? "text-slate-300" : "text-slate-600"}
                   >
-                    {linhas.length} linhas disponíveis • {PARADAS.length} paradas
+                    {linhas.length} linhas disponíveis • {paradas.length} paradas
                   </Typography>
                 </div>
               </div>
@@ -963,7 +963,7 @@ export default function LinhasFavoritas() {
                   ))}
 
                   {/* Marcadores das paradas */}
-                  {PARADAS.map((parada) => (
+                  {paradas.map((parada) => (
                     <Marker
                       key={parada.id}
                       position={[parada.lat, parada.lng]}
