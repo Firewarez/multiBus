@@ -32,6 +32,8 @@ import DirectionsBusIcon from "@mui/icons-material/DirectionsBus";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 import { Brightness4, Brightness7, ArrowBack } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { getLinhasAPI, getParadasAPI } from "../services/api";
+
 
 // Ajuste do ícone padrão do Leaflet (evita problema com assets)
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -43,6 +45,25 @@ L.Icon.Default.mergeOptions({
   shadowUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
+
+interface Linha {
+  id: string;
+  nome: string;
+  desc: string;
+  lat: number;
+  lng: number;
+  status: string;
+  cor: string;
+}
+
+interface Parada {
+  id: string;
+  nome: string;
+  lat: number;
+  lng: number;
+  linhas: string[];
+  movimentacao: string;
+}
 
 // Novas linhas atualizadas
 const LINHAS_INICIAIS = [
@@ -402,7 +423,7 @@ const simularTempoChegada = (linhaId: string): number => {
     "5600": { min: 5, max: 14 },
     "9901": { min: 6, max: 15 }
   };
-  
+
   const config = tempos[linhaId] || { min: 5, max: 15 };
   return Math.floor(Math.random() * (config.max - config.min + 1)) + config.min;
 };
@@ -488,17 +509,19 @@ interface Parada {
 
 export default function LinhasFavoritas() {
   // estado local
-  const [linhas, setLinhas] = useState(LINHAS_INICIAIS);
+  const [linhas, setLinhas] = useState<Linha[]>([]);
+  const [paradas, setParadas] = useState<Parada[]>([]);
+  const [loading, setLoading] = useState(true);
   const [favoritos, setFavoritos] = useState<string[]>([]);
   const [busca, setBusca] = useState("");
   const [posicaoUser, setPosicaoUser] = useState<[number, number] | null>(null);
-  const [snack, setSnack] = useState({ 
-    open: false, 
-    msg: "", 
-    severity: "success" as "success" | "info" | "warning" 
+  const [snack, setSnack] = useState({
+    open: false,
+    msg: "",
+    severity: "success" as "success" | "info" | "warning"
   });
   const [paradaSelecionada, setParadaSelecionada] = useState<Parada | null>(null);
-  const [temposChegada, setTemposChegada] = useState<{[key: string]: number}>({});
+  const [temposChegada, setTemposChegada] = useState<{ [key: string]: number }>({});
   const [carregandoTempos, setCarregandoTempos] = useState(false);
   const [mapaInstancia, setMapaInstancia] = useState<any>(null);
   const [filtroAtivo, setFiltroAtivo] = useState<string>("todos");
@@ -538,6 +561,55 @@ export default function LinhasFavoritas() {
     );
   }, []);
 
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        // Busca linhas e paradas ao mesmo tempo
+        const [linhasData, paradasData] = await Promise.all([
+          getLinhasAPI(),
+          getParadasAPI()
+        ]);
+
+        console.log("Dados recebidos do backend:", { linhasData, paradasData });
+
+        // ADAPTADOR: Transforma os dados do banco (inglês) para o formato do front (português)
+        const linhasFormatadas = linhasData.map((l: any) => ({
+          id: String(l.id), // Garante que ID seja string
+          nome: l.name,
+          desc: l.description || `${l.name} ↔ Centro`, // Fallback se não tiver descrição
+          lat: Number(l.latitude || -7.1194), // Fallback se vier null
+          lng: Number(l.longitude || -34.8273),
+          status: l.status || "Em operação",
+          cor: l.color || "#333",
+        }));
+
+        const paradasFormatadas = paradasData.map((p: any) => ({
+          id: String(p.id),
+          nome: p.name,
+          lat: Number(p.latitude),
+          lng: Number(p.longitude),
+          linhas: [], // Implementaremos a relação depois
+          movimentacao: "media" // Valor padrão
+        }));
+
+        setLinhas(linhasFormatadas);
+        setParadas(paradasFormatadas);
+      } catch (error) {
+        console.error("Erro ao conectar com a API:", error);
+        setSnack({
+          open: true,
+          msg: "Erro ao carregar dados do servidor. Verifique se o backend está rodando.",
+          severity: "warning"
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []); // Array vazio = roda apenas uma vez ao iniciar
+
   // toggle favorito (pela lista ou popup do mapa)
   const toggleFavorito = (id: string, nome?: string) => {
     setFavoritos((prev) => {
@@ -566,7 +638,7 @@ export default function LinhasFavoritas() {
 
     // Filtro por busca
     if (busca) {
-      filtradas = filtradas.filter(l => 
+      filtradas = filtradas.filter(l =>
         l.nome.toLowerCase().includes(busca.toLowerCase()) ||
         l.id.includes(busca)
       );
@@ -601,9 +673,9 @@ export default function LinhasFavoritas() {
   const handleClickParada = (parada: Parada) => {
     setParadaSelecionada(parada);
     setCarregandoTempos(true);
-    
+
     setTimeout(() => {
-      const novosTempos: {[key: string]: number} = {};
+      const novosTempos: { [key: string]: number } = {};
       parada.linhas.forEach((linhaId: string) => {
         novosTempos[linhaId] = simularTempoChegada(linhaId);
       });
@@ -647,13 +719,13 @@ export default function LinhasFavoritas() {
           left: 0,
           right: 0,
           height: "40vh",
-          background: darkMode 
+          background: darkMode
             ? "linear-gradient(135deg, #059669 0%, #0ea5e9 100%)"
             : "linear-gradient(135deg, #10b981 0%, #3b82f6 100%)",
           opacity: 0.1,
           zIndex: 0,
         }}
-    />
+      />
 
       <Box className="max-w-7xl mx-auto p-4 relative z-10">
         <motion.div
@@ -662,7 +734,7 @@ export default function LinhasFavoritas() {
           transition={{ duration: 0.6 }}
         >
           {/* Header */}
-          <motion.div 
+          <motion.div
             className="rounded-2xl shadow-lg p-6 mb-6"
             sx={{
               backgroundColor: darkMode ? "#1e293b" : "#ffffff",
@@ -680,14 +752,14 @@ export default function LinhasFavoritas() {
                   <Bus size={32} className={darkMode ? "text-green-300" : "text-green-600"} />
                 </motion.div>
                 <div>
-                  <Typography 
-                    variant="h4" 
+                  <Typography
+                    variant="h4"
                     className={`font-bold ${darkMode ? "text-green-300" : "text-green-700"}`}
                   >
                     Mapa de Previsões
                   </Typography>
-                  <Typography 
-                    variant="body2" 
+                  <Typography
+                    variant="body2"
                     className={darkMode ? "text-slate-300" : "text-slate-600"}
                   >
                     {linhas.length} linhas disponíveis • {PARADAS.length} paradas
@@ -709,7 +781,7 @@ export default function LinhasFavoritas() {
                       </InputAdornment>
                     ),
                   }}
-                  sx={{ 
+                  sx={{
                     minWidth: 250,
                     backgroundColor: darkMode ? "#334155" : "white",
                     '& .MuiOutlinedInput-root': {
@@ -722,21 +794,21 @@ export default function LinhasFavoritas() {
                     }
                   }}
                 />
-                
+
                 <Tooltip title="Mostrar apenas favoritos">
                   <IconButton
                     onClick={() => setMostrarApenasFavoritos(!mostrarApenasFavoritos)}
-                    sx={{ 
-                      bgcolor: mostrarApenasFavoritos 
+                    sx={{
+                      bgcolor: mostrarApenasFavoritos
                         ? darkMode ? "rgba(246, 194, 62, 0.2)" : "rgba(246, 194, 62, 0.1)"
                         : 'transparent',
-                      color: mostrarApenasFavoritos 
-                        ? '#F6C23E' 
+                      color: mostrarApenasFavoritos
+                        ? '#F6C23E'
                         : darkMode ? '#e2e8f0' : 'inherit'
                     }}
                   >
-                    <Badge 
-                      badgeContent={favoritos.length} 
+                    <Badge
+                      badgeContent={favoritos.length}
                       color="primary"
                       sx={{
                         '& .MuiBadge-badge': {
@@ -751,7 +823,7 @@ export default function LinhasFavoritas() {
 
                 <Tooltip title={darkMode ? "Modo claro" : "Modo escuro"}>
                   <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                    <IconButton 
+                    <IconButton
                       onClick={toggleDarkMode}
                       sx={{
                         backgroundColor: darkMode ? "rgba(34, 197, 94, 0.1)" : "rgba(100, 116, 139, 0.1)",
@@ -769,7 +841,7 @@ export default function LinhasFavoritas() {
             </div>
 
             {/* Filtros */}
-            <motion.div 
+            <motion.div
               className="flex flex-wrap gap-2 mt-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -792,7 +864,7 @@ export default function LinhasFavoritas() {
                     onClick={() => setFiltroAtivo(filtro.key)}
                     color={filtroAtivo === filtro.key ? "primary" : "default"}
                     variant={filtroAtivo === filtro.key ? "filled" : "outlined"}
-                    sx={{ 
+                    sx={{
                       cursor: "pointer",
                       backgroundColor: filtroAtivo === filtro.key
                         ? darkMode ? "rgba(34, 197, 94, 0.2)" : undefined
@@ -807,44 +879,44 @@ export default function LinhasFavoritas() {
 
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Mapa */}
-            <motion.div 
+            <motion.div
               className="lg:col-span-2"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <div 
+              <div
                 className="rounded-2xl shadow-lg overflow-hidden h-[500px] relative"
                 sx={{
                   backgroundColor: darkMode ? "#1e293b" : "#ffffff",
                   border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}`,
                 }}
               >
-                <MapContainer 
-                  center={posicaoUser || [-7.12, -34.86]} 
-                  zoom={13} 
+                <MapContainer
+                  center={posicaoUser || [-7.12, -34.86]}
+                  zoom={13}
                   style={{ height: "100%", width: "100%" }}
                   whenCreated={setMapaInstancia}
                 >
-                  <TileLayer 
-                    url={darkMode 
+                  <TileLayer
+                    url={darkMode
                       ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                       : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    } 
+                    }
                   />
-                  
+
                   {/* Marcadores das linhas */}
                   {linhas.map((l) => (
-                    <Marker 
-                      key={l.id} 
+                    <Marker
+                      key={l.id}
                       position={[l.lat, l.lng]}
                       icon={criarIconeLinha(l.cor)}
                     >
                       <Popup>
-                        <motion.div 
+                        <motion.div
                           initial={{ scale: 0.8, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
-                          style={{ 
+                          style={{
                             minWidth: 220,
                             backgroundColor: darkMode ? "#1e293b" : "white",
                             color: darkMode ? "#e2e8f0" : "#1e293b",
@@ -853,7 +925,7 @@ export default function LinhasFavoritas() {
                           }}
                         >
                           <div className="flex items-center gap-2 mb-2">
-                            <div 
+                            <div
                               className="w-3 h-3 rounded-full"
                               style={{ backgroundColor: l.cor }}
                             />
@@ -892,8 +964,8 @@ export default function LinhasFavoritas() {
 
                   {/* Marcadores das paradas */}
                   {PARADAS.map((parada) => (
-                    <Marker 
-                      key={parada.id} 
+                    <Marker
+                      key={parada.id}
                       position={[parada.lat, parada.lng]}
                       icon={criarIconeParada(parada.movimentacao)}
                       eventHandlers={{
@@ -901,10 +973,10 @@ export default function LinhasFavoritas() {
                       }}
                     >
                       <Popup>
-                        <motion.div 
+                        <motion.div
                           initial={{ scale: 0.8, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
-                          style={{ 
+                          style={{
                             minWidth: 240,
                             backgroundColor: darkMode ? "#1e293b" : "white",
                             color: darkMode ? "#e2e8f0" : "#1e293b",
@@ -924,11 +996,11 @@ export default function LinhasFavoritas() {
                               {parada.linhas.slice(0, 4).map((linhaId: string) => {
                                 const linha = linhas.find(l => l.id === linhaId);
                                 return linha ? (
-                                  <Chip 
-                                    key={linhaId} 
+                                  <Chip
+                                    key={linhaId}
                                     label={linhaId}
                                     size="small"
-                                    style={{ 
+                                    style={{
                                       backgroundColor: linha.cor,
                                       color: "white",
                                       fontWeight: "bold"
@@ -937,7 +1009,7 @@ export default function LinhasFavoritas() {
                                 ) : null;
                               })}
                               {parada.linhas.length > 4 && (
-                                <Chip 
+                                <Chip
                                   label={`+${parada.linhas.length - 4}`}
                                   size="small"
                                   variant="outlined"
@@ -1000,8 +1072,8 @@ export default function LinhasFavoritas() {
                       sx={{
                         bgcolor: darkMode ? '#22c55e' : '#10B981',
                         color: 'white',
-                        '&:hover': { 
-                          bgcolor: darkMode ? '#16a34a' : '#059669' 
+                        '&:hover': {
+                          bgcolor: darkMode ? '#16a34a' : '#059669'
                         }
                       }}
                     >
@@ -1018,24 +1090,24 @@ export default function LinhasFavoritas() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <div 
+              <div
                 className="rounded-2xl shadow-lg p-6 h-[500px] overflow-hidden"
                 sx={{
                   backgroundColor: darkMode ? "#1e293b" : "#ffffff",
                   border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}`,
                 }}
               >
-                <Typography 
-                  variant="h6" 
+                <Typography
+                  variant="h6"
                   className="font-bold mb-4 flex items-center gap-2"
                   sx={{ color: darkMode ? "#e2e8f0" : "#1e293b" }}
                 >
                   <DirectionsBusIcon sx={{ color: darkMode ? "#22c55e" : "#2F855A" }} />
                   {mostrarApenasFavoritos ? "Linhas Favoritas" : "Todas as Linhas"}
-                  <Badge 
-                    badgeContent={linhasFiltradas.length} 
-                    color="primary" 
-                    sx={{ 
+                  <Badge
+                    badgeContent={linhasFiltradas.length}
+                    color="primary"
+                    sx={{
                       ml: 1,
                       '& .MuiBadge-badge': {
                         backgroundColor: darkMode ? '#22c55e' : '#10b981',
@@ -1055,17 +1127,17 @@ export default function LinhasFavoritas() {
                             key={l.id}
                             initial={{ opacity: 0, y: 20, scale: 0.9 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ 
-                              opacity: 0, 
+                            exit={{
+                              opacity: 0,
                               scale: 0.8,
-                              transition: { duration: 0.2 } 
+                              transition: { duration: 0.2 }
                             }}
-                            transition={{ 
-                              type: "spring", 
+                            transition={{
+                              type: "spring",
                               stiffness: 100,
                               delay: index * 0.05
                             }}
-                            whileHover={{ 
+                            whileHover={{
                               scale: 1.02,
                               y: -2,
                               transition: {
@@ -1075,7 +1147,7 @@ export default function LinhasFavoritas() {
                               }
                             }}
                           >
-                            <Card 
+                            <Card
                               className="p-4 relative transition-all duration-300 border-l-4"
                               sx={{
                                 backgroundColor: darkMode ? "#334155" : "white",
@@ -1084,17 +1156,17 @@ export default function LinhasFavoritas() {
                               }}
                             >
                               <div className="absolute top-3 right-3">
-                                <motion.div 
+                                <motion.div
                                   whileHover={{ scale: 1.2 }}
                                   whileTap={{ scale: 0.8 }}
                                   onClick={() => toggleFavorito(l.id, l.nome)}
                                 >
-                                  <IconButton 
-                                    size="small" 
-                                    sx={{ 
+                                  <IconButton
+                                    size="small"
+                                    sx={{
                                       color: isFav ? "#F6C23E" : darkMode ? "#94a3b8" : "#D1D5DB",
-                                      '&:hover': { 
-                                        color: isFav ? "#F59E0B" : darkMode ? "#cbd5e1" : "#9CA3AF" 
+                                      '&:hover': {
+                                        color: isFav ? "#F59E0B" : darkMode ? "#cbd5e1" : "#9CA3AF"
                                       }
                                     }}
                                   >
@@ -1104,14 +1176,14 @@ export default function LinhasFavoritas() {
                               </div>
 
                               <div className="flex items-start gap-3 mb-2">
-                                <div 
+                                <div
                                   className="w-3 h-3 rounded-full mt-2 flex-shrink-0"
                                   style={{ backgroundColor: l.cor }}
                                 />
                                 <div className="flex-1 min-w-0">
-                                  <Typography 
-                                    variant="subtitle1" 
-                                    sx={{ 
+                                  <Typography
+                                    variant="subtitle1"
+                                    sx={{
                                       fontWeight: 600,
                                       color: l.cor
                                     }}
@@ -1119,8 +1191,8 @@ export default function LinhasFavoritas() {
                                   >
                                     {l.nome}
                                   </Typography>
-                                  <Typography 
-                                    variant="body2" 
+                                  <Typography
+                                    variant="body2"
                                     sx={{
                                       color: darkMode ? "#94a3b8" : "text.secondary"
                                     }}
@@ -1142,8 +1214,8 @@ export default function LinhasFavoritas() {
                                     fontSize: '0.7rem'
                                   }}
                                 />
-                                <Typography 
-                                  variant="caption" 
+                                <Typography
+                                  variant="caption"
                                   sx={{
                                     color: darkMode ? "#94a3b8" : "text.secondary"
                                   }}
@@ -1164,15 +1236,15 @@ export default function LinhasFavoritas() {
                         animate={{ opacity: 1, scale: 1 }}
                         className="text-center py-12"
                       >
-                        <DirectionsBusIcon 
-                          sx={{ 
-                            fontSize: 48, 
-                            color: darkMode ? '#475569' : '#9CA3AF', 
-                            mb: 2 
-                          }} 
+                        <DirectionsBusIcon
+                          sx={{
+                            fontSize: 48,
+                            color: darkMode ? '#475569' : '#9CA3AF',
+                            mb: 2
+                          }}
                         />
-                        <Typography 
-                          variant="body1" 
+                        <Typography
+                          variant="body1"
                           sx={{
                             color: darkMode ? "#94a3b8" : "text.secondary"
                           }}
@@ -1188,8 +1260,8 @@ export default function LinhasFavoritas() {
           </div>
 
           {/* Modal de detalhes da parada */}
-          <Dialog 
-            open={!!paradaSelecionada} 
+          <Dialog
+            open={!!paradaSelecionada}
             onClose={handleFecharModal}
             maxWidth="sm"
             fullWidth
@@ -1205,7 +1277,7 @@ export default function LinhasFavoritas() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
             >
-              <DialogTitle 
+              <DialogTitle
                 className="flex items-center gap-2"
                 sx={{
                   color: darkMode ? "#e2e8f0" : "#1e293b",
@@ -1229,8 +1301,8 @@ export default function LinhasFavoritas() {
                     >
                       <CircularProgress />
                     </motion.div>
-                    <Typography 
-                      variant="body2" 
+                    <Typography
+                      variant="body2"
                       style={{ marginLeft: 12 }}
                       sx={{ color: darkMode ? "#94a3b8" : "text.secondary" }}
                     >
@@ -1239,9 +1311,9 @@ export default function LinhasFavoritas() {
                   </Box>
                 ) : (
                   <>
-                    <Typography 
-                      variant="body1" 
-                      gutterBottom 
+                    <Typography
+                      variant="body1"
+                      gutterBottom
                       className="font-semibold"
                       sx={{ color: darkMode ? "#e2e8f0" : "#1e293b" }}
                     >
@@ -1251,9 +1323,9 @@ export default function LinhasFavoritas() {
                       {paradaSelecionada?.linhas.slice(0, 4).map((linhaId: string, index: number) => {
                         const linha = linhas.find(l => l.id === linhaId);
                         const tempo = temposChegada[linhaId];
-                        
+
                         if (!linha) return null;
-                        
+
                         return (
                           <motion.div
                             key={linhaId}
@@ -1261,26 +1333,26 @@ export default function LinhasFavoritas() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.1 }}
                           >
-                            <ListItem 
+                            <ListItem
                               divider
-                              sx={{ 
+                              sx={{
                                 py: 2,
-                                '&:hover': { 
+                                '&:hover': {
                                   bgcolor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
                                   borderRadius: 1
                                 }
                               }}
                             >
                               <ListItemIcon>
-                                <div 
+                                <div
                                   className="w-3 h-3 rounded-full"
                                   style={{ backgroundColor: linha.cor }}
                                 />
                               </ListItemIcon>
                               <ListItemText
                                 primary={
-                                  <Typography 
-                                    variant="subtitle2" 
+                                  <Typography
+                                    variant="subtitle2"
                                     className="font-semibold"
                                     sx={{ color: darkMode ? "#e2e8f0" : "#1e293b" }}
                                   >
@@ -1288,8 +1360,8 @@ export default function LinhasFavoritas() {
                                   </Typography>
                                 }
                                 secondary={
-                                  <Typography 
-                                    variant="body2" 
+                                  <Typography
+                                    variant="body2"
                                     sx={{ color: darkMode ? "#94a3b8" : "text.secondary" }}
                                   >
                                     {linha.desc}
@@ -1298,9 +1370,9 @@ export default function LinhasFavoritas() {
                               />
                               <Box display="flex" alignItems="center" gap={1}>
                                 <Clock size={16} className={darkMode ? "text-slate-400" : "text-gray-500"} />
-                                <Typography 
-                                  variant="h6" 
-                                  style={{ 
+                                <Typography
+                                  variant="h6"
+                                  style={{
                                     fontWeight: 'bold',
                                     color: tempo <= 5 ? '#E53E3E' : tempo <= 10 ? '#D69E2E' : '#38A169',
                                     minWidth: '60px'
@@ -1315,8 +1387,8 @@ export default function LinhasFavoritas() {
                       })}
                     </List>
                     {paradaSelecionada && paradaSelecionada.linhas.length > 4 && (
-                      <Typography 
-                        variant="caption" 
+                      <Typography
+                        variant="caption"
                         className="text-center block mt-2"
                         sx={{ color: darkMode ? "#94a3b8" : "text.secondary" }}
                       >
@@ -1337,9 +1409,9 @@ export default function LinhasFavoritas() {
             anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
             TransitionComponent={Zoom}
           >
-            <Alert 
-              severity={snack.severity} 
-              sx={{ 
+            <Alert
+              severity={snack.severity}
+              sx={{
                 width: "100%",
                 backgroundColor: darkMode ? '#1e293b' : undefined,
                 color: darkMode ? '#e2e8f0' : undefined,

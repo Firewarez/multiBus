@@ -11,6 +11,7 @@ export const registerUser = async (req: Request, res: Response) => {
         email: z.string().email(),
         cpf: z.string().min(11).max(14),
         telefone: z.string().min(10).max(15),
+        nascimento: z.string().optional(),
         password: z.string().min(6)
     });
     try {
