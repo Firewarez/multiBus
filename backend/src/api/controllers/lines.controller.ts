@@ -19,7 +19,8 @@ export const getAllLines = async (req: Request, res: Response) => {
     try {
         const lines = await linesService.getAllLines();
         res.json(lines);
-    } catch {
+    } catch (error) {
+        console.error("❌ ERRO GRAVE AO BUSCAR LINHAS:", error);
         res.status(500).json({ error: "Erro ao buscar linhas." });
     }
 };
