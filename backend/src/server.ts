@@ -29,7 +29,7 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-    origin: '*', // Durante desenvolvimento pode deixar '*', em produção coloque a URL do Vercel
+    origin: 'https://multi-bus-develop.vercel.app', // Durante desenvolvimento pode deixar '*', em produção coloque a URL do Vercel
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
