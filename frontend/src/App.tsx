@@ -10,9 +10,11 @@ import RecargaCartao from "./pages/RecargaCartao";
 import PontosRecarga from "./pages/PontosRecarga";
 import MapaPrevisoes from "./pages/MapaPrevisoes";
 import { ThemeProvider } from "./context/ThemeContext";
+import { ProfileProvider } from "./context/ProfileContext";
 
 function App() {
   return (
+    <ProfileProvider>
     <ThemeProvider>
     <BrowserRouter>
       <Routes>
@@ -29,6 +31,7 @@ function App() {
       </Routes>
     </BrowserRouter>
     </ThemeProvider>
+    </ProfileProvider>
   );
 }
 

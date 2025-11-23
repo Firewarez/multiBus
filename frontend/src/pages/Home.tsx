@@ -54,9 +54,11 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useProfile } from "../context/ProfileContext";
 
 export default function Home() {
   const { darkMode, toggleDarkMode } = useTheme();
+  const { profile, getProfileImage } = useProfile();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
   const [openInfo, setOpenInfo] = useState(false);
@@ -355,6 +357,13 @@ export default function Home() {
     }
   };
 
+  const formatPhone = (phone: string) => {
+    if (phone.length === 11) {
+      return `(${phone.slice(0,2)}) ${phone.slice(2,7)}-${phone.slice(7)}`;
+    }
+    return phone;
+  };
+
   return (
     <Box
       sx={{
@@ -613,7 +622,7 @@ export default function Home() {
                     className="mb-4"
                   >
                     <Avatar
-                      src="https://i.imgur.com/4YQZ4ZC.png"
+                      src={getProfileImage(profile.nome)}
                       sx={{
                         width: { xs: 80, sm: 100, md: 120 },
                         height: { xs: 80, sm: 100, md: 120 },
@@ -633,7 +642,7 @@ export default function Home() {
                       color: darkMode ? "#22c55e" : "#10b981"
                     }}
                   >
-                    Arthur Barcelos
+                    {profile.nome}
                   </Typography>
 
                   <Chip
@@ -662,7 +671,7 @@ export default function Home() {
                           color: darkMode ? "#e2e8f0" : "#1f2937",
                           fontSize: { xs: '0.8rem', sm: '0.875rem' }
                         }}>
-                          arthurbarcelos04@gmail.com
+                          {profile.email}
                         </Typography>
                       </div>
                     </div>
@@ -683,7 +692,7 @@ export default function Home() {
                           color: darkMode ? "#e2e8f0" : "#1f2937",
                           fontSize: { xs: '0.8rem', sm: '0.875rem' }
                         }}>
-                          (83) 98856-9012
+                          {formatPhone(profile.telefone)}
                         </Typography>
                       </div>
                     </div>
@@ -704,7 +713,7 @@ export default function Home() {
                           color: darkMode ? "#e2e8f0" : "#1f2937",
                           fontSize: { xs: '0.8rem', sm: '0.875rem' }
                         }}>
-                          João Pessoa, PB
+                          {profile.cidade}, {profile.uf}
                         </Typography>
                       </div>
                     </div>

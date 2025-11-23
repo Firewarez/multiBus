@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Box,
   Typography,
@@ -12,6 +12,10 @@ import {
   Chip,
   Fab,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import {
   Brightness4,
@@ -20,13 +24,16 @@ import {
   Edit,
   Save,
   CheckCircle,
+  CameraAlt,
+  Delete,
 } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTheme } from "../context/ThemeContext"; // Ajuste o caminho conforme necessário
+import { useTheme } from "../context/ThemeContext";
+import { useProfile } from "../context/ProfileContext";
 
 // Validação Zod
 const profileSchema = z.object({
@@ -56,10 +63,12 @@ type ProfileData = z.infer<typeof profileSchema>;
 export default function Perfil() {
   const [isEditing, setIsEditing] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  // Usando o contexto de tema
   const { darkMode, toggleDarkMode } = useTheme();
+  const { profile, updateProfile, updateProfilePhoto, getProfileImage } = useProfile();
 
   const {
     register,
@@ -68,17 +77,11 @@ export default function Perfil() {
     reset,
   } = useForm<ProfileData>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      nome: "Arthur Barcelos",
-      email: "arthurbarcelos04@gmail.com",
-      telefone: "83988569012",
-      cidade: "João Pessoa",
-      uf: "PB",
-    },
+    defaultValues: profile,
   });
 
   const onSubmit = (data: ProfileData) => {
-    console.log("Dados salvos:", data);
+    updateProfile(data);
     setSaveSuccess(true);
     setIsEditing(false);
     setTimeout(() => setSaveSuccess(false), 3000);
@@ -87,7 +90,53 @@ export default function Perfil() {
   const handleEdit = () => setIsEditing(true);
   const handleCancel = () => {
     setIsEditing(false);
-    reset();
+    reset(profile);
+  };
+
+  // Funções para manipulação de foto
+  const handlePhotoClick = () => {
+    setPhotoDialogOpen(true);
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Verifica se o arquivo é uma imagem
+      if (!file.type.startsWith('image/')) {
+        alert('Por favor, selecione apenas arquivos de imagem.');
+        return;
+      }
+
+      // Verifica o tamanho do arquivo (máximo 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('A imagem deve ter no máximo 5MB.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const photoUrl = e.target?.result as string;
+        updateProfilePhoto(photoUrl);
+        setPhotoDialogOpen(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    updateProfilePhoto('');
+    setPhotoDialogOpen(false);
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  const formatPhone = (phone: string) => {
+    if (phone.length === 11) {
+      return `(${phone.slice(0,2)}) ${phone.slice(2,7)}-${phone.slice(7)}`;
+    }
+    return phone;
   };
 
   return (
@@ -135,13 +184,20 @@ export default function Perfil() {
             <div>
               <Typography
                 variant="h3"
-                className={`font-bold ${darkMode ? "text-green-300" : "text-green-700"}`}
+                sx={{
+                  fontWeight: 'bold',
+                  color: darkMode ? "#22c55e" : "#10b981",
+                  fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem' }
+                }}
               >
                 Meu Perfil
               </Typography>
               <Typography
                 variant="subtitle1"
-                className={darkMode ? "text-slate-300" : "text-slate-600"}
+                sx={{
+                  color: darkMode ? "#cbd5e1" : "#475569",
+                  fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                }}
               >
                 Gerencie suas informações pessoais
               </Typography>
@@ -168,7 +224,7 @@ export default function Perfil() {
           </div>
         </motion.div>
 
-        <div className="grid lg:grid-cols-4 gap-8">
+        <div className="grid lg:grid-cols-4 gap-6">
           {/* Coluna lateral */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -185,28 +241,54 @@ export default function Perfil() {
                 border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}`,
               }}
             >
-              <CardContent className="p-6 text-center">
+              <CardContent className="p-4 sm:p-6 text-center">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
-                  className="mb-4"
+                  className="mb-4 relative"
                 >
                   <Avatar
-                    src="https://i.imgur.com/4YQZ4ZC.png"
+                    src={getProfileImage(profile.nome)}
                     sx={{
-                      width: 120,
-                      height: 120,
+                      width: { xs: 80, sm: 100, md: 120 },
+                      height: { xs: 80, sm: 100, md: 120 },
                       borderRadius: "20px",
                       margin: "0 auto",
                       border: `3px solid ${darkMode ? "#22c55e" : "#10b981"}`,
+                      cursor: 'pointer',
                     }}
+                    onClick={handlePhotoClick}
                   />
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    className="absolute bottom-0 right-0"
+                  >
+                    <IconButton
+                      onClick={handlePhotoClick}
+                      sx={{
+                        backgroundColor: darkMode ? "#22c55e" : "#10b981",
+                        color: "white",
+                        '&:hover': {
+                          backgroundColor: darkMode ? "#16a34a" : "#059669",
+                        },
+                        width: 32,
+                        height: 32,
+                      }}
+                    >
+                      <CameraAlt sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </motion.div>
                 </motion.div>
 
                 <Typography 
                   variant="h6" 
-                  className={`font-bold mb-2 ${darkMode ? "text-green-400" : "text-green-700"}`}
+                  sx={{
+                    fontWeight: 'bold',
+                    mb: 2,
+                    color: darkMode ? "#22c55e" : "#10b981",
+                    fontSize: { xs: '1rem', sm: '1.25rem' }
+                  }}
                 >
-                  Arthur Barcelos
+                  {profile.nome}
                 </Typography>
 
                 <Chip
@@ -220,28 +302,46 @@ export default function Perfil() {
 
                 <div className="space-y-3 text-left">
                   <div>
-                    <Typography variant="caption" className={darkMode ? "text-slate-400" : "text-slate-600"}>
+                    <Typography variant="caption" sx={{ 
+                      color: darkMode ? "#94a3b8" : "#64748b",
+                      fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                    }}>
                       Localização
                     </Typography>
-                    <Typography variant="body2" className={darkMode ? "text-slate-200" : "text-slate-800"}>
-                      João Pessoa, PB
+                    <Typography variant="body2" sx={{ 
+                      color: darkMode ? "#e2e8f0" : "#1f2937",
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                    }}>
+                      {profile.cidade}, {profile.uf}
                     </Typography>
                   </div>
 
                   <div>
-                    <Typography variant="caption" className={darkMode ? "text-slate-400" : "text-slate-600"}>
-                      Membro desde
+                    <Typography variant="caption" sx={{ 
+                      color: darkMode ? "#94a3b8" : "#64748b",
+                      fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                    }}>
+                      Telefone
                     </Typography>
-                    <Typography variant="body2" className={darkMode ? "text-slate-200" : "text-slate-800"}>
-                      Janeiro 2024
+                    <Typography variant="body2" sx={{ 
+                      color: darkMode ? "#e2e8f0" : "#1f2937",
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                    }}>
+                      {formatPhone(profile.telefone)}
                     </Typography>
                   </div>
 
                   <div>
-                    <Typography variant="caption" className={darkMode ? "text-slate-400" : "text-slate-600"}>
+                    <Typography variant="caption" sx={{ 
+                      color: darkMode ? "#94a3b8" : "#64748b",
+                      fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                    }}>
                       Status
                     </Typography>
-                    <Typography variant="body2" className={darkMode ? "text-slate-200" : "text-slate-800"}>
+                    <Typography variant="body2" sx={{ 
+                      color: darkMode ? "#e2e8f0" : "#1f2937",
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                    }}>
                       <span className="text-green-500 font-semibold">Ativo</span>
                     </Typography>
                   </div>
@@ -261,6 +361,7 @@ export default function Perfil() {
                     sx={{
                       color: darkMode ? "#e2e8f0" : "#475569",
                       borderColor: darkMode ? "#475569" : "#cbd5e1",
+                      fontSize: { xs: '0.875rem', sm: '1rem' },
                       '&:hover': {
                         borderColor: darkMode ? "#22c55e" : "#10b981",
                         backgroundColor: darkMode ? "rgba(34, 197, 94, 0.1)" : "rgba(16, 185, 129, 0.1)",
@@ -294,11 +395,15 @@ export default function Perfil() {
                 border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}`,
               }}
             >
-              <CardContent className="p-8">
+              <CardContent className="p-4 sm:p-6 md:p-8">
                 <div className="flex items-center justify-between mb-6">
                   <Typography
                     variant="h4"
-                    className={`font-bold ${darkMode ? "text-green-400" : "text-green-700"}`}
+                    sx={{
+                      fontWeight: 'bold',
+                      color: darkMode ? "#22c55e" : "#10b981",
+                      fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' }
+                    }}
                   >
                     Informações Pessoais
                   </Typography>
@@ -517,6 +622,7 @@ export default function Perfil() {
                           borderColor: darkMode ? "#475569" : "#cbd5e1",
                           borderRadius: 2,
                           px: 4,
+                          fontSize: { xs: '0.875rem', sm: '1rem' },
                           '&:hover': {
                             borderColor: darkMode ? "#ef4444" : "#dc2626",
                             backgroundColor: darkMode ? "rgba(239, 68, 68, 0.1)" : "rgba(220, 38, 38, 0.1)",
@@ -536,6 +642,7 @@ export default function Perfil() {
                             color: "white",
                             borderRadius: 2,
                             px: 4,
+                            fontSize: { xs: '0.875rem', sm: '1rem' },
                             '&:hover': {
                               background: "linear-gradient(135deg, #059669 0%, #2563eb 100%)",
                             }
@@ -552,6 +659,103 @@ export default function Perfil() {
           </motion.div>
         </div>
       </Container>
+
+      {/* Dialog para alterar foto */}
+      <Dialog 
+        open={photoDialogOpen} 
+        onClose={() => setPhotoDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            backgroundColor: darkMode ? '#1e293b' : 'white',
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          color: darkMode ? "#22c55e" : "#10b981",
+          fontSize: { xs: '1.25rem', sm: '1.5rem' }
+        }}>
+          Alterar Foto do Perfil
+        </DialogTitle>
+        <DialogContent>
+          <div className="flex flex-col items-center gap-4 py-4">
+            <Avatar
+              src={getProfileImage(profile.nome)}
+              sx={{
+                width: 120,
+                height: 120,
+                borderRadius: "20px",
+                border: `3px solid ${darkMode ? "#22c55e" : "#10b981"}`,
+              }}
+            />
+            
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              accept="image/*"
+              style={{ display: 'none' }}
+            />
+            
+            <Button
+              variant="contained"
+              onClick={triggerFileInput}
+              startIcon={<CameraAlt />}
+              sx={{
+                background: "linear-gradient(135deg, #10b981 0%, #3b82f6 100%)",
+                color: "white",
+                borderRadius: 2,
+                px: 4,
+                '&:hover': {
+                  background: "linear-gradient(135deg, #059669 0%, #2563eb 100%)",
+                }
+              }}
+            >
+              Escolher Foto
+            </Button>
+
+            {profile.foto && (
+              <Button
+                variant="outlined"
+                onClick={handleRemovePhoto}
+                startIcon={<Delete />}
+                sx={{
+                  color: "#ef4444",
+                  borderColor: "#ef4444",
+                  '&:hover': {
+                    backgroundColor: "rgba(239, 68, 68, 0.1)",
+                  }
+                }}
+              >
+                Remover Foto
+              </Button>
+            )}
+
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: darkMode ? "#94a3b8" : "#64748b",
+                textAlign: 'center',
+                mt: 1
+              }}
+            >
+              Formatos suportados: JPG, PNG, GIF<br />
+              Tamanho máximo: 5MB
+            </Typography>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={() => setPhotoDialogOpen(false)}
+            sx={{
+              color: darkMode ? "#94a3b8" : "#64748b",
+            }}
+          >
+            Fechar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* FAB para voltar */}
       <motion.div
