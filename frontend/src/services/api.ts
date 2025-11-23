@@ -1,9 +1,18 @@
 import axios from 'axios';
 
 // Cria a instância do Axios
+const getBaseUrl = () => {
+    // Se estivermos rodando no computador local (localhost)
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return 'http://localhost:3000/api/v1';
+    }
+
+    // Se estivermos na internet (Vercel), usa o backend do Render
+    return 'https://multibus-api.onrender.com/';
+};
+
 const api = axios.create({
-    // Aqui apontamos para a porta 3000 e incluímos o /api/v1 que está no server.ts
-    baseURL: 'http://localhost:3000/api/v1',
+    baseURL: getBaseUrl(),
 });
 
 // Funções para buscar dados
