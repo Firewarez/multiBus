@@ -50,6 +50,7 @@ import {
   Star,
   Home as HomeIcon,
   ArrowBack,
+  DirectionsBus,
 } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
@@ -478,10 +479,15 @@ export default function Home() {
               </IconButton>
               <div className="flex items-center gap-3 sm:gap-4">
                 <motion.div
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 2,
+                    ease: "easeInOut" 
+                  }}
+                  whileHover={{ scale: 1.1 }}
                 >
-                  <LocationOn sx={{ 
+                  <DirectionsBus sx={{ 
                     fontSize: { xs: 28, sm: 32 }, 
                     color: darkMode ? "#22c55e" : "#10b981" 
                   }} />
