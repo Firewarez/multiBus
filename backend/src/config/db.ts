@@ -2,29 +2,36 @@ import { Pool } from "pg";
 import dotenv from "dotenv";
 import path from "path";
 
-// Tenta carregar o .env localmente (para quando você roda no PC)
+// Carrega .env local se existir
 const envPath = path.resolve(__dirname, "../../../.env");
 dotenv.config({ path: envPath });
 
-// Limpa espaços em branco que podem vir do Copy/Paste
-const user = (process.env.POSTGRES_USER || "").trim();
-const password = (process.env.POSTGRES_PASSWORD || "").trim();
-const host = (process.env.DB_HOST || "").trim();
+// Limpa e força tipagem string
+const user = String(process.env.POSTGRES_USER || "").trim();
+const password = String(process.env.POSTGRES_PASSWORD || "").trim();
+const host = String(process.env.DB_HOST || "").trim();
 const port = Number(process.env.DB_PORT) || 5432;
-const database = (process.env.POSTGRES_DB || "postgres").trim();
+const database = String(process.env.POSTGRES_DB || "postgres").trim();
 
-console.log(`🔌 [DB] Conectando em: ${host}:${port}`);
-console.log(`👤 [DB] Usuário: ${user}`);
+// --- ÁREA DE DEBUG ---
+console.log("========================================");
+console.log("🔍 DEBUG DE CREDENCIAIS (Render)");
+console.log(`👤 User lido:     '${user}'`); // Aspas mostram espaços escondidos
+console.log(`🏠 Host lido:     '${host}'`);
+console.log(`🚪 Port lido:     '${port}'`);
+console.log(`🗄️  Database:      '${database}'`);
+console.log(`🔑 Senha (len):   ${password.length} caracteres`);
+console.log("========================================");
 
-
+// Monta string manualmente
 const connectionString = `postgres://${user}:${password}@${host}:${port}/${database}`;
 
 export const pool = new Pool({
     connectionString,
     ssl: {
-        rejectUnauthorized: false, 
+        rejectUnauthorized: false,
     },
-    connectionTimeoutMillis: 10000, 
+    connectionTimeoutMillis: 10000,
     idleTimeoutMillis: 10000,
 });
 
