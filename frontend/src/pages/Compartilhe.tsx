@@ -44,7 +44,7 @@ export default function Compartilhe() {
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText("https://multibus.app");
+      await navigator.clipboard.writeText("https://multi-bus-develop.vercel.app/");
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 3000);
     } catch (err) {
