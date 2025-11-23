@@ -1,5 +1,4 @@
-import dns from 'node:dns';
-dns.setDefaultResultOrder('ipv4first');
+
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
@@ -12,12 +11,25 @@ import routesRoutes from "./api/routes/routes.routes";
 import loginRoutes from "./api/routes/login.routes";
 
 dotenv.config();
+const envPath = path.resolve(__dirname, "../../.env");
+const result = dotenv.config({ path: envPath });
+
+
+if (result.error) {
+    console.error("❌ Erro ao ler o arquivo .env:", result.error);
+} else {
+    console.log("📂 Caminho do .env carregado:", envPath);
+    console.log("📝 Variáveis lidas:", Object.keys(result.parsed || {}).length);
+    // Verifica se leu as variáveis críticas (sem mostrar a senha)
+    console.log("   -> DB_HOST:", process.env.DB_HOST || "NÃO LIDO");
+    console.log("   -> PORT:", process.env.PORT || "NÃO LIDO");
+}
 
 const app = express();
 app.use(express.json());
 
 app.use(cors({
-    origin: '*', // Durante desenvolvimento pode deixar '*', em produção coloque a URL do Vercel
+    origin: 'https://multi-bus-develop.vercel.app/', // Durante desenvolvimento pode deixar '*', em produção coloque a URL do Vercel
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
