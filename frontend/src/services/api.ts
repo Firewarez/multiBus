@@ -8,7 +8,7 @@ const getBaseUrl = () => {
     }
 
     // Se estivermos na internet (Vercel), usa o backend do Render
-    return 'https://multibus-api.onrender.com/';
+    return 'https://multibus-api.onrender.com/api/v1';
 };
 
 const api = axios.create({

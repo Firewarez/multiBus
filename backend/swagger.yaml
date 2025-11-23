@@ -23,7 +23,7 @@ paths:
                 type: string
                 example: "🚍 API MultiBus rodando!"
 
-  /stops:
+  /api/v1/stops:
     get:
       summary: Lista todas as paradas
       description: Retorna uma lista de todas as paradas de ônibus cadastradas
@@ -69,7 +69,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /stops/{id}:
+  /api/v1/stops/{id}:
     get:
       summary: Busca uma parada por ID
       description: Retorna os dados de uma parada específica
@@ -162,7 +162,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /lines:
+  /api/v1/lines:
     get:
       summary: Lista todas as linhas
       description: Retorna uma lista de todas as linhas de ônibus cadastradas
@@ -208,7 +208,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /lines/{id}:
+  /api/v1/lines/{id}:
     get:
       summary: Busca uma linha por ID
       description: Retorna os dados de uma linha específica
@@ -301,7 +301,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /routes:
+  /api/v1/routes:
     get:
       summary: Lista todas as rotas
       description: Retorna uma lista de todas as rotas com informações das linhas
@@ -347,7 +347,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /routes/{id}:
+  /api/v1/routes/{id}:
     get:
       summary: Busca uma rota por ID
       description: Retorna os dados de uma rota específica
@@ -440,7 +440,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /routes/line/{lineId}:
+  /api/v1/routes/line/{lineId}:
     get:
       summary: Busca rotas por linha
       description: Retorna todas as rotas de uma linha específica
@@ -469,7 +469,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /routes/{id}/stops:
+  /api/v1/routes/{id}/stops:
     get:
       summary: Lista paradas de uma rota
       description: Retorna todas as paradas de uma rota em ordem
@@ -529,7 +529,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /routes/{routeId}/stops/{stopId}:
+  /api/v1/routes/{routeId}/stops/{stopId}:
     delete:
       summary: Remove parada da rota
       description: Remove uma parada específica de uma rota
@@ -559,6 +559,87 @@ paths:
                   message:
                     type: string
                     example: "Parada removida da rota com sucesso."
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/login/register:
+    post:
+      summary: Registra um novo usuário
+      description: Cria uma nova conta de usuário no sistema
+      tags:
+        - Autenticação
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterInput'
+      responses:
+        '201':
+          description: Usuário registrado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/login/update/{id}:
+    put:
+      summary: Atualiza dados do usuário
+      description: Atualiza as informações de um usuário existente
+      tags:
+        - Autenticação
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do usuário
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateInput'
+      responses:
+        '200':
+          description: Usuário atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
         '500':
           description: Erro interno do servidor
           content:
@@ -801,3 +882,106 @@ components:
           example: "Erro interno do servidor"
       required:
         - error
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID único do usuário
+          example: 1
+        username:
+          type: string
+          description: Nome de usuário
+          example: "joaosilva"
+        email:
+          type: string
+          format: email
+          description: Email do usuário
+          example: "joao@email.com"
+        cpf:
+          type: string
+          description: CPF do usuário
+          example: "12345678900"
+        telefone:
+          type: string
+          description: Telefone do usuário
+          example: "83987654321"
+        nascimento:
+          type: string
+          format: date
+          description: Data de nascimento
+          example: "1990-01-01"
+      required:
+        - id
+        - username
+        - email
+        - cpf
+        - telefone
+
+    UserRegisterInput:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 3
+          description: Nome de usuário
+          example: "joaosilva"
+        email:
+          type: string
+          format: email
+          description: Email do usuário
+          example: "joao@email.com"
+        cpf:
+          type: string
+          minLength: 11
+          maxLength: 14
+          description: CPF do usuário
+          example: "12345678900"
+        telefone:
+          type: string
+          minLength: 10
+          maxLength: 15
+          description: Telefone do usuário
+          example: "83987654321"
+        nascimento:
+          type: string
+          format: date
+          description: Data de nascimento (opcional)
+          example: "1990-01-01"
+        password:
+          type: string
+          minLength: 6
+          description: Senha do usuário
+          example: "senha123"
+      required:
+        - username
+        - email
+        - cpf
+        - telefone
+        - password
+
+    UserUpdateInput:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Nome de usuário
+          example: "joaosilva"
+        email:
+          type: string
+          format: email
+          description: Email do usuário
+          example: "joao@email.com"
+        cpf:
+          type: string
+          description: CPF do usuário
+          example: "12345678900"
+        telefone:
+          type: string
+          description: Telefone do usuário
+          example: "83987654321"
+        password:
+          type: string
+          description: Nova senha do usuário
+          example: "novasenha123"
