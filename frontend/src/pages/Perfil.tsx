@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTheme } from "../context/ThemeContext"; // Ajuste o caminho conforme necessário
 
 // Validação Zod
 const profileSchema = z.object({
@@ -53,10 +54,12 @@ const profileSchema = z.object({
 type ProfileData = z.infer<typeof profileSchema>;
 
 export default function Perfil() {
-  const [darkMode, setDarkMode] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const navigate = useNavigate();
+
+  // Usando o contexto de tema
+  const { darkMode, toggleDarkMode } = useTheme();
 
   const {
     register,
@@ -81,7 +84,6 @@ export default function Perfil() {
     setTimeout(() => setSaveSuccess(false), 3000);
   };
 
-  const toggleDarkMode = () => setDarkMode(!darkMode);
   const handleEdit = () => setIsEditing(true);
   const handleCancel = () => {
     setIsEditing(false);

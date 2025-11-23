@@ -38,15 +38,16 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Lock, Shield, Users, Database, Globe, Mail } from "lucide-react";
+import { useTheme } from "../context/ThemeContext"; // Ajuste o caminho conforme necessário
 
 export default function PoliticaPrivacidade() {
-  const [darkMode, setDarkMode] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [liked, setLiked] = useState(false);
   const [expanded, setExpanded] = useState<string | false>(false);
   const navigate = useNavigate();
 
-  const toggleDarkMode = () => setDarkMode(!darkMode);
+  // Usando o contexto de tema
+  const { darkMode, toggleDarkMode } = useTheme();
 
   const handleAccordionChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false);

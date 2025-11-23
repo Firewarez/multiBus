@@ -34,7 +34,6 @@ import { Brightness4, Brightness7, ArrowBack } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { getLinhasAPI, getParadasAPI } from "../services/api";
 
-
 // Ajuste do ícone padrão do Leaflet (evita problema com assets)
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({

@@ -29,14 +29,13 @@ import {
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext"; // ← 1. ADICIONE ESTE IMPORT
 
 export default function Ajuda() {
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, toggleDarkMode } = useTheme(); // ← 2. SUBSTITUA ESTA LINHA
   const [searchTerm, setSearchTerm] = useState("");
   const [expanded, setExpanded] = useState<string | false>(false);
   const navigate = useNavigate();
-
-  const toggleDarkMode = () => setDarkMode(!darkMode);
 
   const handleAccordionChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false);

@@ -26,13 +26,12 @@ import {
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext"; // ← 1. ADICIONE ESTE IMPORT
 
 export default function TermosUso() {
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, toggleDarkMode } = useTheme(); // ← 2. SUBSTITUA ESTA LINHA
   const [accepted, setAccepted] = useState(false);
   const navigate = useNavigate();
-
-  const toggleDarkMode = () => setDarkMode(!darkMode);
 
   const termsSections = [
     {
@@ -80,7 +79,7 @@ export default function TermosUso() {
     {
       icon: <Security sx={{ fontSize: 24 }} />,
       title: "8. Disposições Gerais",
-      content: "Estes Termos constituem o acordo completo entre as partes. Caso qualquer disposição seja considerada inválida, as demais permanecerão em pleno vigor. Estes Termos são regidos pelas leis da República Federativa do Brasil.",
+      content: "Estes Termos constituim o acordo completo entre as partes. Caso qualquer disposição seja considerada inválida, as demais permanecerão em pleno vigor. Estes Termos são regidos pelas leis da República Federativa do Brasil.",
       color: "#84cc16"
     }
   ];

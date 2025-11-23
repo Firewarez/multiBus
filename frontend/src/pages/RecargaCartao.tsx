@@ -42,6 +42,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Brightness4, Brightness7, Search, AccountBalance } from "@mui/icons-material";
+import { useTheme } from "../context/ThemeContext"; // ← 1. ADICIONE ESTE IMPORT
 
 // Função para simular busca do cartão pelo CPF
 function buscarCartaoPorCPF(cpf: string) {
@@ -53,6 +54,7 @@ function buscarCartaoPorCPF(cpf: string) {
 }
 
 export default function RecargaCartao() {
+  const { darkMode, toggleDarkMode } = useTheme(); // ← 2. SUBSTITUA ESTA LINHA
   const [valor, setValor] = useState(0);
   const [numCartao, setNumCartao] = useState("");
   const [cpf, setCpf] = useState("");
@@ -61,7 +63,6 @@ export default function RecargaCartao() {
   const [error, setError] = useState("");
   const [pagamento, setPagamento] = useState<"pix" | "cartao">("pix");
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const [autoRecarga, setAutoRecarga] = useState(false);
   const navigate = useNavigate();
 
@@ -84,8 +85,6 @@ export default function RecargaCartao() {
       data: "10/12/2024 09:15"
     }
   ]);
-
-  const toggleDarkMode = () => setDarkMode(!darkMode);
 
   const valoresSugeridos = [5, 10, 20, 50, 100];
 
@@ -657,70 +656,71 @@ export default function RecargaCartao() {
                 </Typography>
 
                 <div className="space-y-3 max-h-[500px] overflow-y-auto">
-                  <AnimatePresence mode="popLayout">
-                    {historico.map((recarga, index) => (
-                      <motion.div
-                        key={recarga.id}
-                        layout
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="p-3 rounded-lg border"
-                        sx={{
-                          backgroundColor: darkMode ? "#334155" : "white",
-                          borderColor: darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-                        }}
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <Typography 
-                            variant="body1" 
-                            className={`font-bold ${darkMode ? "text-green-400" : "text-green-700"}`}
-                          >
-                            + R$ {recarga.valor.toFixed(2)}
-                          </Typography>
-                          <Chip
-                            label={recarga.metodo}
-                            size="small"
-                            sx={{
-                              backgroundColor: darkMode ? "rgba(34, 197, 94, 0.2)" : "rgba(16, 185, 129, 0.2)",
-                              color: darkMode ? "#22c55e" : "#10b981",
-                              fontSize: '0.7rem',
-                            }}
-                          />
-                        </div>
-                        <Typography 
-                          variant="body2" 
-                          className={darkMode ? "text-green-300" : "text-green-600"}
-                        >
-                          Cashback: R$ {recarga.cashback.toFixed(2)}
-                        </Typography>
-                        <Typography 
-                          variant="caption" 
-                          className={darkMode ? "text-slate-400" : "text-slate-600"}
-                        >
-                          {recarga.data}
-                        </Typography>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
+  <AnimatePresence mode="popLayout">
+    {historico.map((recarga, index) => (
+      <motion.div
+        key={recarga.id}
+        layout
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ delay: index * 0.1 }}
+        className="p-3 rounded-lg"
+        sx={{
+          backgroundColor: darkMode ? "#334155" : "white",
+          border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+          borderRadius: 1,
+        }}
+      >
+        <div className="flex justify-between items-start mb-2">
+          <Typography 
+            variant="body1" 
+            className={`font-bold ${darkMode ? "text-green-400" : "text-green-700"}`}
+          >
+            + R$ {recarga.valor.toFixed(2)}
+          </Typography>
+          <Chip
+            label={recarga.metodo}
+            size="small"
+            sx={{
+              backgroundColor: darkMode ? "rgba(34, 197, 94, 0.2)" : "rgba(16, 185, 129, 0.2)",
+              color: darkMode ? "#22c55e" : "#10b981",
+              fontSize: '0.7rem',
+            }}
+          />
+        </div>
+        <Typography 
+          variant="body2" 
+          className={darkMode ? "text-green-300" : "text-green-600"}
+        >
+          Cashback: R$ {recarga.cashback.toFixed(2)}
+        </Typography>
+        <Typography 
+          variant="caption" 
+          className={darkMode ? "text-slate-400" : "text-slate-600"}
+        >
+          {recarga.data}
+        </Typography>
+      </motion.div>
+    ))}
+  </AnimatePresence>
 
-                  {historico.length === 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="text-center py-8"
-                    >
-                      <History size={48} className={`mx-auto mb-3 ${darkMode ? "text-slate-500" : "text-slate-400"}`} />
-                      <Typography 
-                        variant="body2" 
-                        className={darkMode ? "text-slate-400" : "text-slate-600"}
-                      >
-                        Nenhuma recarga realizada
-                      </Typography>
-                    </motion.div>
-                  )}
-                </div>
+  {historico.length === 0 && (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="text-center py-8"
+    >
+      <History size={48} className={`mx-auto mb-3 ${darkMode ? "text-slate-500" : "text-slate-400"}`} />
+      <Typography 
+        variant="body2" 
+        className={darkMode ? "text-slate-400" : "text-slate-600"}
+      >
+        Nenhuma recarga realizada
+      </Typography>
+    </motion.div>
+  )}
+</div>
               </CardContent>
             </Card>
           </motion.div>

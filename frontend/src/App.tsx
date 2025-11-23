@@ -9,9 +9,11 @@ import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
 import RecargaCartao from "./pages/RecargaCartao";
 import PontosRecarga from "./pages/PontosRecarga";
 import MapaPrevisoes from "./pages/MapaPrevisoes";
+import { ThemeProvider } from "./context/ThemeContext";
 
 function App() {
   return (
+    <ThemeProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -26,6 +28,7 @@ function App() {
         <Route path="/mapa-previsoes" element={<MapaPrevisoes />} />
       </Routes>
     </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

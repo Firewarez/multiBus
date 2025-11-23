@@ -34,18 +34,19 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Brightness4, Brightness7, Search, MyLocation } from "@mui/icons-material";
+import { useTheme } from "../context/ThemeContext"; // Ajuste o caminho conforme necessário
 
 export default function PontosRecarga() {
   const [bairroFiltro, setBairroFiltro] = useState("");
   const [favoritos, setFavoritos] = useState<string[]>([]);
   const [localizacao, setLocalizacao] = useState<{ lat: number; lng: number } | null>(null);
   const [modalPonto, setModalPonto] = useState<any>(null);
-  const [darkMode, setDarkMode] = useState(false);
   const [filtroAtivo, setFiltroAtivo] = useState("todos");
   const [carregandoLocalizacao, setCarregandoLocalizacao] = useState(false);
   const navigate = useNavigate();
 
-  const toggleDarkMode = () => setDarkMode(!darkMode);
+  // Usando o contexto de tema
+  const { darkMode, toggleDarkMode } = useTheme();
 
   // LISTA DE PONTOS DE RECARGA
   const pontos = [

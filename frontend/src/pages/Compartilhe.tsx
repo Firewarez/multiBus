@@ -28,14 +28,13 @@ import {
 } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext"; // ← 1. ADICIONE ESTE IMPORT
 
 export default function Compartilhe() {
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, toggleDarkMode } = useTheme(); // ← 2. SUBSTITUA ESTA LINHA
   const [copySuccess, setCopySuccess] = useState(false);
   const [shareCount, setShareCount] = useState(128);
   const navigate = useNavigate();
-
-  const toggleDarkMode = () => setDarkMode(!darkMode);
 
   const shareLinks = {
     whatsapp: `https://wa.me/?text=${encodeURIComponent("Confira o MultiBus - Seu transporte inteligente! 🚌✨ Acesse: https://multibus.app")}`,

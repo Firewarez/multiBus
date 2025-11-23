@@ -54,16 +54,16 @@ import {
 } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext"; // ← 1. ADICIONE ESTE IMPORT
 
 export default function Home() {
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, toggleDarkMode } = useTheme(); // ← 2. SUBSTITUA ESTA LINHA
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
   const [openInfo, setOpenInfo] = useState(false);
   const navigate = useNavigate();
 
   const toggleDrawer = () => setMobileOpen(!mobileOpen);
-  const toggleDarkMode = () => setDarkMode(!darkMode);
   const drawerWidth = 280;
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export default function Home() {
     <div className={`flex flex-col justify-between h-full p-4 rounded-r-[25px] transition-all duration-300 ${
       darkMode 
         ? "bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900" 
-        : "bg-gradient-to-b from-[#C9DF8A] via-[#77AB59] to-[#36802D]"
+        : "bg-gradient-to-b from-[#10b981] via-[#059669] to-[#047857]"
     }`}>
       <div>
         <div className="text-center mb-8">
@@ -109,9 +109,9 @@ export default function Home() {
               sx={{
                 borderRadius: 2,
                 mb: 1,
-                backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.1)',
+                backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.15)',
                 '&:hover': {
-                  backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.2)' : 'rgba(255,255,255,0.2)',
+                  backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.2)' : 'rgba(255,255,255,0.25)',
                 }
               }}
             >
@@ -121,7 +121,8 @@ export default function Home() {
               <ListItemText 
                 primary="Início" 
                 primaryTypographyProps={{
-                  className: darkMode ? "text-green-400" : "text-white"
+                  className: darkMode ? "text-green-400" : "text-white",
+                  fontWeight: 'bold'
                 }}
               />
             </ListItemButton>
@@ -134,8 +135,9 @@ export default function Home() {
               sx={{
                 borderRadius: 2,
                 mb: 1,
+                backgroundColor: 'rgba(255,255,255,0.05)',
                 '&:hover': {
-                  backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.1)',
+                  backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.15)',
                 }
               }}
             >
@@ -145,7 +147,8 @@ export default function Home() {
               <ListItemText 
                 primary="Recarregar Cartões" 
                 primaryTypographyProps={{
-                  className: darkMode ? "text-gray-300" : "text-white"
+                  className: darkMode ? "text-gray-300" : "text-white",
+                  fontWeight: 'medium'
                 }}
               />
             </ListItemButton>
@@ -158,8 +161,9 @@ export default function Home() {
               sx={{
                 borderRadius: 2,
                 mb: 1,
+                backgroundColor: 'rgba(255,255,255,0.05)',
                 '&:hover': {
-                  backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.1)',
+                  backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.15)',
                 }
               }}
             >
@@ -169,7 +173,8 @@ export default function Home() {
               <ListItemText 
                 primary="Pontos de Recarga" 
                 primaryTypographyProps={{
-                  className: darkMode ? "text-gray-300" : "text-white"
+                  className: darkMode ? "text-gray-300" : "text-white",
+                  fontWeight: 'medium'
                 }}
               />
             </ListItemButton>
@@ -182,8 +187,9 @@ export default function Home() {
               sx={{
                 borderRadius: 2,
                 mb: 1,
+                backgroundColor: 'rgba(255,255,255,0.05)',
                 '&:hover': {
-                  backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.1)',
+                  backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.15)',
                 }
               }}
             >
@@ -193,7 +199,8 @@ export default function Home() {
               <ListItemText 
                 primary="Mapa de Previsões" 
                 primaryTypographyProps={{
-                  className: darkMode ? "text-gray-300" : "text-white"
+                  className: darkMode ? "text-gray-300" : "text-white",
+                  fontWeight: 'medium'
                 }}
               />
             </ListItemButton>
@@ -206,8 +213,9 @@ export default function Home() {
               sx={{
                 borderRadius: 2,
                 mb: 1,
+                backgroundColor: 'rgba(255,255,255,0.05)',
                 '&:hover': {
-                  backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.1)',
+                  backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.15)',
                 }
               }}
             >
@@ -217,7 +225,8 @@ export default function Home() {
               <ListItemText 
                 primary="Editar Perfil" 
                 primaryTypographyProps={{
-                  className: darkMode ? "text-gray-300" : "text-white"
+                  className: darkMode ? "text-gray-300" : "text-white",
+                  fontWeight: 'medium'
                 }}
               />
             </ListItemButton>
@@ -229,8 +238,9 @@ export default function Home() {
               to="/politica-privacidade"
               sx={{
                 borderRadius: 2,
+                backgroundColor: 'rgba(255,255,255,0.05)',
                 '&:hover': {
-                  backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.1)',
+                  backgroundColor: darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.15)',
                 }
               }}
             >
@@ -240,12 +250,28 @@ export default function Home() {
               <ListItemText 
                 primary="Privacidade" 
                 primaryTypographyProps={{
-                  className: darkMode ? "text-gray-300" : "text-white"
+                  className: darkMode ? "text-gray-300" : "text-white",
+                  fontWeight: 'medium'
                 }}
               />
             </ListItemButton>
           </ListItem>
         </List>
+      </div>
+
+      {/* Footer da sidebar com informações adicionais */}
+      <div className="mt-8">
+        <Divider sx={{ 
+          borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)',
+          mb: 2 
+        }} />
+        <Typography 
+          variant="caption" 
+          className={darkMode ? "text-gray-400" : "text-green-100"}
+          sx={{ display: 'block', textAlign: 'center' }}
+        >
+          v2.1.0 • MultiBus
+        </Typography>
       </div>
     </div>
   );
