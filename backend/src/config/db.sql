@@ -19,6 +19,14 @@ CREATE TABLE IF NOT EXISTS routes (
     line_id INT NOT NULL REFERENCES lines(id) ON DELETE CASCADE,
     direction VARCHAR(10) NOT NULL CHECK (direction IN ('ida', 'volta'))
 );
+-- Tabela de Paradas Favoritas
+CREATE TABLE IF NOT EXISTS favorite_stops (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES usuario(id) ON DELETE CASCADE,
+    stop_id INT NOT NULL REFERENCES stops(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, stop_id)
+);
 
 -- Ordem das Paradas dentro de cada Rota (Route_Stops)
 CREATE TABLE IF NOT EXISTS route_stops (

@@ -69,6 +69,22 @@ CREATE TABLE IF NOT EXISTS routes (
     direction VARCHAR(10) NOT NULL CHECK (direction IN ('ida', 'volta'))
 );
 
+-- Tabela de Notificações
+CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(20) NOT NULL CHECK (type IN ('aviso', 'informacao', 'atraso', 'emergencia', 'manutencao')),
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_active BOOLEAN DEFAULT true,
+    priority VARCHAR(10) DEFAULT 'media' CHECK (priority IN ('baixa', 'media', 'alta', 'urgente')),
+    start_date TIMESTAMP, -- Quando a notificação começa a valer
+    end_date TIMESTAMP,   -- Quando a notificação expira
+    affected_lines VARCHAR(100), -- Linhas afetadas (ex: '120, 175, 201')
+    affected_stops VARCHAR(100)  -- Paradas afetadas
+);
+
 -- Ordem das paradas dentro de cada rota (Route_Stops)
 CREATE TABLE IF NOT EXISTS route_stops (
     id SERIAL PRIMARY KEY,
