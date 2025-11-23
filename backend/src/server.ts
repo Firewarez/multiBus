@@ -1,4 +1,5 @@
-// Todas as Importações
+import dns from 'node:dns';
+dns.setDefaultResultOrder('ipv4first');
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
