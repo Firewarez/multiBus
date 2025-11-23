@@ -10,7 +10,6 @@ import {
   Avatar,
   Container,
   Chip,
-  Fab,
   Tooltip,
   Dialog,
   DialogTitle,
@@ -54,10 +53,10 @@ import {
 } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext"; // ← 1. ADICIONE ESTE IMPORT
+import { useTheme } from "../context/ThemeContext";
 
 export default function Home() {
-  const { darkMode, toggleDarkMode } = useTheme(); // ← 2. SUBSTITUA ESTA LINHA
+  const { darkMode, toggleDarkMode } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
   const [openInfo, setOpenInfo] = useState(false);
@@ -259,7 +258,6 @@ export default function Home() {
         </List>
       </div>
 
-      {/* Footer da sidebar com informações adicionais */}
       <div className="mt-8">
         <Divider sx={{ 
           borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)',
@@ -367,6 +365,8 @@ export default function Home() {
         transition: "all 0.4s ease-in-out",
         position: "relative",
         overflow: "hidden",
+        width: '100%',
+        maxWidth: '100vw',
       }}
     >
       {/* Drawer Desktop */}
@@ -411,9 +411,12 @@ export default function Home() {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, md: 4 },
+          p: { xs: 2, sm: 3, md: 4 },
           ml: { md: `${drawerWidth}px` },
           transition: "all 0.3s ease",
+          width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
+          maxWidth: '100%',
+          overflowX: 'hidden',
         }}
       >
         {/* Background decorativo */}
@@ -432,15 +435,24 @@ export default function Home() {
           }}
         />
 
-        <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, py: 4 }}>
+        <Container 
+          maxWidth={false} 
+          sx={{ 
+            position: "relative", 
+            zIndex: 1, 
+            py: { xs: 2, md: 4 },
+            px: { xs: 0, sm: 2 },
+            maxWidth: '100% !important',
+          }}
+        >
           {/* Cabeçalho */}
           <motion.div
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex justify-between items-center mb-8"
+            className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6"
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
               <IconButton
                 color="inherit"
                 onClick={toggleDrawer}
@@ -455,23 +467,33 @@ export default function Home() {
               >
                 {mobileOpen ? <CloseIcon /> : <MenuIcon />}
               </IconButton>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <LocationOn sx={{ fontSize: 32, color: darkMode ? "#22c55e" : "#10b981" }} />
+                  <LocationOn sx={{ 
+                    fontSize: { xs: 28, sm: 32 }, 
+                    color: darkMode ? "#22c55e" : "#10b981" 
+                  }} />
                 </motion.div>
                 <div>
                   <Typography
                     variant="h3"
-                    className={`font-bold ${darkMode ? "text-green-300" : "text-green-700"}`}
+                    sx={{
+                      fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem' },
+                      fontWeight: 'bold',
+                      color: darkMode ? "#22c55e" : "#10b981"
+                    }}
                   >
                     MultiBus
                   </Typography>
                   <Typography
                     variant="subtitle1"
-                    className={darkMode ? "text-slate-300" : "text-slate-600"}
+                    sx={{
+                      fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                      color: darkMode ? "#cbd5e1" : "#475569"
+                    }}
                   >
                     Seu transporte inteligente
                   </Typography>
@@ -479,7 +501,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -493,13 +515,17 @@ export default function Home() {
                     backdropFilter: "blur(10px)",
                     border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
                     borderRadius: 3,
-                    px: 3,
+                    px: { xs: 2, sm: 3 },
                     py: 1,
+                    minWidth: { xs: 80, sm: 100 },
                   }}
                 >
                   <Typography 
                     variant="body1" 
-                    className={darkMode ? "text-slate-200" : "text-slate-700"}
+                    sx={{
+                      fontSize: { xs: '0.875rem', sm: '1rem' },
+                      color: darkMode ? "#e2e8f0" : "#374151"
+                    }}
                   >
                     {currentTime}
                   </Typography>
@@ -530,7 +556,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="mb-8"
+            className="mb-6"
           >
             <TextField
               fullWidth
@@ -546,14 +572,14 @@ export default function Home() {
                   borderRadius: 3,
                   backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'white',
                   border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
-                  fontSize: '1.1rem',
-                  padding: '12px 16px',
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  padding: { xs: '8px 12px', sm: '12px 16px' },
                   '&:hover': {
                     borderColor: darkMode ? "#22c55e" : "#10b981",
                   },
                   '&.Mui-focused': {
                     borderColor: darkMode ? "#22c55e" : "#10b981",
-                    boxShadow: `0 0 0 3px ${darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(16, 185, 129, 0.1)'}`,
+                    boxShadow: `0 0 0 2px ${darkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(16, 185, 129, 0.1)'}`,
                   }
                 }
               }}
@@ -561,16 +587,16 @@ export default function Home() {
           </motion.div>
 
           {/* Grid principal - Cards com mesma altura */}
-          <div className="grid lg:grid-cols-3 gap-8 mb-8">
-            {/* Coluna do perfil - Agora com mesma altura */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
+            {/* Coluna do perfil */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="lg:col-span-1"
+              className="col-span-1"
             >
               <Card
-                className="shadow-2xl rounded-2xl overflow-hidden h-full"
+                className="shadow-xl rounded-2xl overflow-hidden h-full"
                 sx={{
                   background: darkMode
                     ? "linear-gradient(135deg, #1e293b 0%, #334155 100%)"
@@ -581,7 +607,7 @@ export default function Home() {
                   height: '100%',
                 }}
               >
-                <CardContent className="p-6 text-center flex flex-col flex-1">
+                <CardContent className="p-4 sm:p-6 text-center flex flex-col flex-1">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     className="mb-4"
@@ -589,8 +615,8 @@ export default function Home() {
                     <Avatar
                       src="https://i.imgur.com/4YQZ4ZC.png"
                       sx={{
-                        width: 120,
-                        height: 120,
+                        width: { xs: 80, sm: 100, md: 120 },
+                        height: { xs: 80, sm: 100, md: 120 },
                         borderRadius: "20px",
                         margin: "0 auto",
                         border: `3px solid ${darkMode ? "#22c55e" : "#10b981"}`,
@@ -600,7 +626,12 @@ export default function Home() {
 
                   <Typography 
                     variant="h5" 
-                    className={`font-bold mb-2 ${darkMode ? "text-green-400" : "text-green-700"}`}
+                    sx={{
+                      fontWeight: 'bold',
+                      mb: 2,
+                      fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                      color: darkMode ? "#22c55e" : "#10b981"
+                    }}
                   >
                     Arthur Barcelos
                   </Typography>
@@ -614,38 +645,65 @@ export default function Home() {
                     sx={{ mb: 3 }}
                   />
 
-                  <div className="space-y-3 text-left mb-6 flex-1">
+                  <div className="space-y-3 text-left mb-4 sm:mb-6 flex-1">
                     <div className="flex items-center gap-3">
-                      <Email sx={{ fontSize: 20, color: darkMode ? "#94a3b8" : "#64748b" }} />
+                      <Email sx={{ 
+                        fontSize: { xs: 18, sm: 20 }, 
+                        color: darkMode ? "#94a3b8" : "#64748b" 
+                      }} />
                       <div>
-                        <Typography variant="caption" className={darkMode ? "text-slate-400" : "text-slate-600"}>
+                        <Typography variant="caption" sx={{ 
+                          color: darkMode ? "#94a3b8" : "#64748b",
+                          fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                        }}>
                           E-mail
                         </Typography>
-                        <Typography variant="body2" className={darkMode ? "text-slate-200" : "text-slate-800"}>
+                        <Typography variant="body2" sx={{ 
+                          color: darkMode ? "#e2e8f0" : "#1f2937",
+                          fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                        }}>
                           arthurbarcelos04@gmail.com
                         </Typography>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <Phone sx={{ fontSize: 20, color: darkMode ? "#94a3b8" : "#64748b" }} />
+                      <Phone sx={{ 
+                        fontSize: { xs: 18, sm: 20 }, 
+                        color: darkMode ? "#94a3b8" : "#64748b" 
+                      }} />
                       <div>
-                        <Typography variant="caption" className={darkMode ? "text-slate-400" : "text-slate-600"}>
+                        <Typography variant="caption" sx={{ 
+                          color: darkMode ? "#94a3b8" : "#64748b",
+                          fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                        }}>
                           Telefone
                         </Typography>
-                        <Typography variant="body2" className={darkMode ? "text-slate-200" : "text-slate-800"}>
+                        <Typography variant="body2" sx={{ 
+                          color: darkMode ? "#e2e8f0" : "#1f2937",
+                          fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                        }}>
                           (83) 98856-9012
                         </Typography>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <LocationOn sx={{ fontSize: 20, color: darkMode ? "#94a3b8" : "#64748b" }} />
+                      <LocationOn sx={{ 
+                        fontSize: { xs: 18, sm: 20 }, 
+                        color: darkMode ? "#94a3b8" : "#64748b" 
+                      }} />
                       <div>
-                        <Typography variant="caption" className={darkMode ? "text-slate-400" : "text-slate-600"}>
+                        <Typography variant="caption" sx={{ 
+                          color: darkMode ? "#94a3b8" : "#64748b",
+                          fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                        }}>
                           Localização
                         </Typography>
-                        <Typography variant="body2" className={darkMode ? "text-slate-200" : "text-slate-800"}>
+                        <Typography variant="body2" sx={{ 
+                          color: darkMode ? "#e2e8f0" : "#1f2937",
+                          fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                        }}>
                           João Pessoa, PB
                         </Typography>
                       </div>
@@ -664,6 +722,8 @@ export default function Home() {
                         color: darkMode ? "#e2e8f0" : "#475569",
                         borderColor: darkMode ? "#475569" : "#cbd5e1",
                         borderRadius: 2,
+                        fontSize: { xs: '0.875rem', sm: '1rem' },
+                        py: { xs: 1, sm: 1.5 },
                         '&:hover': {
                           borderColor: darkMode ? "#22c55e" : "#10b981",
                           backgroundColor: darkMode ? "rgba(34, 197, 94, 0.1)" : "rgba(16, 185, 129, 0.1)",
@@ -682,10 +742,10 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.5 }}
-              className="lg:col-span-2"
+              className="col-span-1 lg:col-span-2"
             >
               <Card
-                className="shadow-2xl rounded-2xl overflow-hidden h-full"
+                className="shadow-xl rounded-2xl overflow-hidden h-full"
                 sx={{
                   background: darkMode
                     ? "linear-gradient(135deg, #1e293b 0%, #334155 100%)"
@@ -696,24 +756,32 @@ export default function Home() {
                   height: '100%',
                 }}
               >
-                <CardContent className="p-6 flex flex-col flex-1">
-                  <div className="flex items-center justify-between mb-6">
+                <CardContent className="p-4 sm:p-6 flex flex-col flex-1">
+                  <div className="flex items-center justify-between mb-4 sm:mb-6">
                     <Typography
                       variant="h4"
-                      className={`font-bold flex items-center gap-3 ${darkMode ? "text-green-400" : "text-green-700"}`}
+                      sx={{
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
+                        color: darkMode ? "#22c55e" : "#10b981"
+                      }}
                     >
-                      <Notifications sx={{ fontSize: 32 }} />
+                      <Notifications sx={{ fontSize: { xs: 28, sm: 32 } }} />
                       Notificações
                     </Typography>
                     
                     <Chip 
                       label={`${notifications.length} alertas`} 
                       color="primary" 
-                      variant="outlined" 
+                      variant="outlined"
+                      size={window.innerWidth < 400 ? "small" : "medium"}
                     />
                   </div>
 
-                  <div className="space-y-4 flex-1">
+                  <div className="space-y-3 sm:space-y-4 flex-1">
                     <AnimatePresence>
                       {notifications.map((notif, index) => {
                         const style = getNotificationStyle(notif.tipo);
@@ -725,26 +793,38 @@ export default function Home() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.1 }}
                             whileHover={{ scale: 1.02 }}
-                            className={`border rounded-xl p-4 bg-gradient-to-r ${style.gradient} ${style.box} transition-all duration-300`}
+                            className={`border rounded-xl p-3 sm:p-4 bg-gradient-to-r ${style.gradient} ${style.box} transition-all duration-300`}
                           >
-                            <div className="flex items-start gap-4">
+                            <div className="flex items-start gap-3 sm:gap-4">
                               <div className="pt-1">{style.icon}</div>
                               
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                  <span className={`px-2 py-1 text-xs text-white rounded-md ${style.badgeColor}`}>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
+                                  <span className={`px-2 py-1 text-xs text-white rounded-md ${style.badgeColor} self-start`}>
                                     {style.badge}
                                   </span>
-                                  <Typography variant="caption" className={darkMode ? "text-slate-400" : "text-slate-600"}>
+                                  <Typography variant="caption" sx={{ 
+                                    color: darkMode ? "#94a3b8" : "#64748b",
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                                  }}>
                                     {notif.tempo}
                                   </Typography>
                                 </div>
                                 
-                                <Typography variant="h6" className={`font-bold mb-1 ${darkMode ? "text-slate-200" : "text-slate-800"}`}>
+                                <Typography variant="h6" sx={{ 
+                                  fontWeight: 'bold',
+                                  mb: 1,
+                                  fontSize: { xs: '1rem', sm: '1.125rem' },
+                                  color: darkMode ? "#e2e8f0" : "#1f2937"
+                                }}>
                                   {notif.linha}
                                 </Typography>
                                 
-                                <Typography variant="body2" className={darkMode ? "text-slate-300" : "text-slate-700"}>
+                                <Typography variant="body2" sx={{ 
+                                  color: darkMode ? "#cbd5e1" : "#374151",
+                                  fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                                  lineHeight: 1.4
+                                }}>
                                   {notif.msg}
                                 </Typography>
                               </div>
@@ -764,10 +844,9 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
-            className="mb-8"
+            className="mb-6"
           >
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {quickActions.map((action, index) => (
                 <motion.div
                   key={action.label}
@@ -787,8 +866,8 @@ export default function Home() {
                         : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
                       color: "white",
                       borderRadius: 3,
-                      py: 3,
-                      fontSize: '1.1rem',
+                      py: { xs: 2, sm: 3 },
+                      fontSize: { xs: '0.875rem', sm: '1rem' },
                       fontWeight: 'bold',
                       boxShadow: '0 4px 14px 0 rgba(0,0,0,0.1)',
                       '&:hover': {
@@ -799,6 +878,7 @@ export default function Home() {
                         boxShadow: '0 8px 25px 0 rgba(0,0,0,0.15)',
                       },
                       transition: 'all 0.3s ease',
+                      minHeight: { xs: '56px', sm: '64px' }
                     }}
                   >
                     {action.label}
@@ -813,10 +893,10 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.5 }}
-            className="mb-8"
+            className="mb-6"
           >
             <Card
-              className="shadow-2xl rounded-2xl overflow-hidden"
+              className="shadow-xl rounded-2xl overflow-hidden"
               sx={{
                 background: darkMode
                   ? "linear-gradient(135deg, #1e293b 0%, #334155 100%)"
@@ -824,11 +904,15 @@ export default function Home() {
                 border: `1px solid ${darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}`,
               }}
             >
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
                   <Typography
                     variant="h4"
-                    className={`font-bold ${darkMode ? "text-green-400" : "text-green-700"}`}
+                    sx={{
+                      fontWeight: 'bold',
+                      fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
+                      color: darkMode ? "#22c55e" : "#10b981"
+                    }}
                   >
                     Mapa de Rotas
                   </Typography>
@@ -845,7 +929,7 @@ export default function Home() {
                   </Tooltip>
                 </div>
 
-                <div className="w-full h-[400px] rounded-lg overflow-hidden shadow-lg">
+                <div className="w-full h-[250px] sm:h-[350px] md:h-[400px] rounded-lg overflow-hidden shadow-lg relative">
                   <iframe
                     title="mapa"
                     width="100%"
@@ -853,7 +937,12 @@ export default function Home() {
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3951.466170284263!2d-34.8711394!3d-7.1468747!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7ace9b6dc64e6ef%3A0x8b32dfe2d4f0028a!2sJo%C3%A3o%20Pessoa%2C%20PB!5e0!3m2!1spt-BR!2sbr!4v1699630952356!5m2!1spt-BR!2sbr"
                     allowFullScreen
                     loading="lazy"
-                    style={{ border: 'none' }}
+                    style={{ 
+                      border: 'none',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0
+                    }}
                   />
                 </div>
               </CardContent>
@@ -867,22 +956,38 @@ export default function Home() {
           onClose={() => setOpenInfo(false)}
           maxWidth="sm"
           fullWidth
+          sx={{
+            '& .MuiDialog-paper': {
+              margin: { xs: 2, sm: 3 },
+              width: '100%',
+              maxWidth: '100%',
+            }
+          }}
         >
-          <DialogTitle className={darkMode ? "text-green-400" : "text-green-700"}>
+          <DialogTitle sx={{ 
+            color: darkMode ? "#22c55e" : "#10b981",
+            fontSize: { xs: '1.25rem', sm: '1.5rem' },
+            pb: 1
+          }}>
             Informações do Mapa
           </DialogTitle>
           <DialogContent>
-            <Typography className={darkMode ? "text-slate-300" : "text-slate-700"}>
+            <Typography sx={{ 
+              color: darkMode ? "#cbd5e1" : "#374151",
+              fontSize: { xs: '0.875rem', sm: '1rem' },
+              lineHeight: 1.5
+            }}>
               O mapa mostra toda a cidade de João Pessoa, PB.
               Um recurso para se guiar pelas rotas de ônibus disponíveis na cidade.
               Utilize os controles do mapa para navegar, ampliar e explorar as áreas de interesse.
             </Typography>
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ px: 3, pb: 3 }}>
             <Button 
               onClick={() => setOpenInfo(false)}
               sx={{
                 color: darkMode ? "#94a3b8" : "#64748b",
+                fontSize: { xs: '0.875rem', sm: '1rem' }
               }}
             >
               Fechar
