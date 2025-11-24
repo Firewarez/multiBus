@@ -101,7 +101,7 @@ export const getRouteStops = async (routeId: number) => {
             stop: true // Assumindo que o campo de relação se chama 'stop'
         },
         orderBy: {
-            stopOrder: 'asc' // Ordena pela ordem da parada
+            stop_order: 'asc' // Ordena pela ordem da parada
         }
     });
 };
@@ -113,7 +113,7 @@ export const addStopToRoute = async (routeId: number, stopData: { stop_id: numbe
         data: {
             routeId: routeId,
             stopId: stopData.stop_id,
-            stopOrder: stopData.stop_order // Assumindo 'stopOrder' como camelCase no Prisma
+            stop_order: stopData.stop_order // Usando 'stop_order' conforme definido no schema Prisma
         }
     });
 };
