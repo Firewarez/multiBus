@@ -566,6 +566,239 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /api/v1/notifications:
+    get:
+      summary: Lista todas as notificações
+      description: Retorna uma lista de todas as notificações do sistema
+      tags:
+        - Notificações
+      parameters:
+        - name: is_active
+          in: query
+          required: false
+          description: Filtrar por notificações ativas ou inativas
+          schema:
+            type: boolean
+        - name: type
+          in: query
+          required: false
+          description: Filtrar por tipo de notificação
+          schema:
+            type: string
+            enum: [aviso, informacao, atraso, emergencia, manutencao]
+        - name: priority
+          in: query
+          required: false
+          description: Filtrar por prioridade
+          schema:
+            type: string
+            enum: [baixa, media, alta, urgente]
+      responses:
+        '200':
+          description: Lista de notificações
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Cria uma nova notificação
+      description: Cadastra uma nova notificação no sistema
+      tags:
+        - Notificações
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationInput'
+      responses:
+        '201':
+          description: Notificação criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/notifications/active:
+    get:
+      summary: Lista notificações ativas
+      description: Retorna apenas as notificações que estão ativas no momento
+      tags:
+        - Notificações
+      responses:
+        '200':
+          description: Lista de notificações ativas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/notifications/{id}:
+    get:
+      summary: Busca uma notificação por ID
+      description: Retorna os dados de uma notificação específica
+      tags:
+        - Notificações
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da notificação
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dados da notificação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        '404':
+          description: Notificação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Atualiza uma notificação
+      description: Atualiza os dados de uma notificação existente
+      tags:
+        - Notificações
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da notificação
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationUpdateInput'
+      responses:
+        '200':
+          description: Notificação atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        '404':
+          description: Notificação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Remove uma notificação
+      description: Remove uma notificação do sistema
+      tags:
+        - Notificações
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da notificação
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Notificação removida com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Notificação removida com sucesso"
+        '404':
+          description: Notificação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/notifications/{id}/toggle:
+    patch:
+      summary: Ativa/Desativa uma notificação
+      description: Alterna o status de ativo/inativo de uma notificação
+      tags:
+        - Notificações
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da notificação
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Status da notificação alterado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        '404':
+          description: Notificação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /api/v1/login/register:
     post:
       summary: Registra um novo usuário
@@ -985,3 +1218,168 @@ components:
           type: string
           description: Nova senha do usuário
           example: "novasenha123"
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID único da notificação
+          example: 1
+        type:
+          type: string
+          description: Tipo da notificação
+          enum: [aviso, informacao, atraso, emergencia, manutencao]
+          example: "atraso"
+        title:
+          type: string
+          description: Título da notificação
+          maxLength: 200
+          example: "Atraso na Linha 120"
+        description:
+          type: string
+          description: Descrição detalhada da notificação
+          example: "A linha 120 está com atraso de aproximadamente 15 minutos devido ao trânsito intenso na Av. Principal."
+        created_at:
+          type: string
+          format: date-time
+          description: Data e hora de criação
+          example: "2025-11-24T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Data e hora da última atualização
+          example: "2025-11-24T10:30:00Z"
+        is_active:
+          type: boolean
+          description: Indica se a notificação está ativa
+          example: true
+        priority:
+          type: string
+          description: Prioridade da notificação
+          enum: [baixa, media, alta, urgente]
+          example: "alta"
+        start_date:
+          type: string
+          format: date-time
+          description: Data e hora de início da validade
+          nullable: true
+          example: "2025-11-24T08:00:00Z"
+        end_date:
+          type: string
+          format: date-time
+          description: Data e hora de término da validade
+          nullable: true
+          example: "2025-11-24T18:00:00Z"
+        affected_lines:
+          type: string
+          description: Códigos das linhas afetadas (separados por vírgula)
+          nullable: true
+          example: "120, 175, 201"
+        affected_stops:
+          type: string
+          description: IDs das paradas afetadas (separados por vírgula)
+          nullable: true
+          example: "1, 5, 12"
+      required:
+        - id
+        - type
+        - title
+        - created_at
+        - is_active
+        - priority
+
+    NotificationInput:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Tipo da notificação
+          enum: [aviso, informacao, atraso, emergencia, manutencao]
+          example: "atraso"
+        title:
+          type: string
+          description: Título da notificação
+          maxLength: 200
+          example: "Atraso na Linha 120"
+        description:
+          type: string
+          description: Descrição detalhada da notificação
+          example: "A linha 120 está com atraso de aproximadamente 15 minutos devido ao trânsito intenso na Av. Principal."
+        is_active:
+          type: boolean
+          description: Indica se a notificação está ativa
+          default: true
+          example: true
+        priority:
+          type: string
+          description: Prioridade da notificação
+          enum: [baixa, media, alta, urgente]
+          default: "media"
+          example: "alta"
+        start_date:
+          type: string
+          format: date-time
+          description: Data e hora de início da validade
+          example: "2025-11-24T08:00:00Z"
+        end_date:
+          type: string
+          format: date-time
+          description: Data e hora de término da validade
+          example: "2025-11-24T18:00:00Z"
+        affected_lines:
+          type: string
+          description: Códigos das linhas afetadas (separados por vírgula)
+          example: "120, 175, 201"
+        affected_stops:
+          type: string
+          description: IDs das paradas afetadas (separados por vírgula)
+          example: "1, 5, 12"
+      required:
+        - type
+        - title
+
+    NotificationUpdateInput:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Tipo da notificação
+          enum: [aviso, informacao, atraso, emergencia, manutencao]
+          example: "atraso"
+        title:
+          type: string
+          description: Título da notificação
+          maxLength: 200
+          example: "Atraso na Linha 120"
+        description:
+          type: string
+          description: Descrição detalhada da notificação
+          example: "A linha 120 está com atraso de aproximadamente 15 minutos."
+        is_active:
+          type: boolean
+          description: Indica se a notificação está ativa
+          example: true
+        priority:
+          type: string
+          description: Prioridade da notificação
+          enum: [baixa, media, alta, urgente]
+          example: "alta"
+        start_date:
+          type: string
+          format: date-time
+          description: Data e hora de início da validade
+          example: "2025-11-24T08:00:00Z"
+        end_date:
+          type: string
+          format: date-time
+          description: Data e hora de término da validade
+          example: "2025-11-24T18:00:00Z"
+        affected_lines:
+          type: string
+          description: Códigos das linhas afetadas (separados por vírgula)
+          example: "120, 175, 201"
+        affected_stops:
+          type: string
+          description: IDs das paradas afetadas (separados por vírgula)
+          example: "1, 5, 12"

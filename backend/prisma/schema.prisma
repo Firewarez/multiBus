@@ -107,3 +107,20 @@ model usuario {
   paradafav      paradafav[]
   recarga_cartao recarga_cartao[]
 }
+
+model Notification {
+  id             Int       @id @default(autoincrement())
+  type           String    @db.VarChar(20)
+  title          String    @db.VarChar(200)
+  description    String?   @db.Text
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  isActive       Boolean   @default(true) @map("is_active")
+  priority       String    @default("media") @db.VarChar(10)
+  startDate      DateTime? @map("start_date") @db.Timestamp(6)
+  endDate        DateTime? @map("end_date") @db.Timestamp(6)
+  affectedLines  String?   @map("affected_lines") @db.VarChar(100)
+  affectedStops  String?   @map("affected_stops") @db.VarChar(100)
+
+  @@map("notifications")
+}

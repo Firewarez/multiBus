@@ -12,6 +12,7 @@ import stopsRoutes from "./api/routes/stops.routes";
 import linesRoutes from "./api/routes/lines.routes";
 import routesRoutes from "./api/routes/routes.routes";
 import loginRoutes from "./api/routes/login.routes";
+import notifRoutes from "./api/routes/notif.routes";
 
 dotenv.config();
 const envPath = path.resolve(__dirname, "../../.env");
@@ -51,6 +52,7 @@ app.use("/api/v1/stops", stopsRoutes);
 app.use("/api/v1/lines", linesRoutes);
 app.use("/api/v1/routes", routesRoutes);
 app.use("/api/v1/login", loginRoutes);
+app.use("/api/v1/notifications", notifRoutes);
 
 // Teste de Rota Inicial com Tipagem em TY
 app.get("/", (req: Request, res: Response) => {
