@@ -799,12 +799,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /api/v1/login/register:
+  /api/v1/users:
     post:
       summary: Registra um novo usuário
       description: Cria uma nova conta de usuário no sistema
       tags:
-        - Autenticação
+        - Usuários
       requestBody:
         required: true
         content:
@@ -836,19 +836,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /api/v1/login/update/{id}:
+  /api/v1/users/{id}:
     put:
       summary: Atualiza dados do usuário
       description: Atualiza as informações de um usuário existente
       tags:
-        - Autenticação
+        - Usuários
       parameters:
         - name: id
           in: path
           required: true
           description: ID do usuário
           schema:
-            type: string
+            type: integer
       requestBody:
         required: true
         content:
@@ -1123,10 +1123,10 @@ components:
           type: integer
           description: ID único do usuário
           example: 1
-        username:
+        nome:
           type: string
-          description: Nome de usuário
-          example: "joaosilva"
+          description: Nome completo do usuário
+          example: "João Silva"
         email:
           type: string
           format: email
@@ -1147,19 +1147,19 @@ components:
           example: "1990-01-01"
       required:
         - id
-        - username
+        - nome
         - email
         - cpf
-        - telefone
+        - nascimento
 
     UserRegisterInput:
       type: object
       properties:
-        username:
+        nome:
           type: string
           minLength: 3
-          description: Nome de usuário
-          example: "joaosilva"
+          description: Nome completo do usuário
+          example: "João Silva"
         email:
           type: string
           format: email
@@ -1175,32 +1175,32 @@ components:
           type: string
           minLength: 10
           maxLength: 15
-          description: Telefone do usuário
+          description: Telefone do usuário (opcional)
           example: "83987654321"
         nascimento:
           type: string
           format: date
-          description: Data de nascimento (opcional)
+          description: Data de nascimento
           example: "1990-01-01"
-        password:
+        senha:
           type: string
           minLength: 6
           description: Senha do usuário
           example: "senha123"
       required:
-        - username
+        - nome
         - email
         - cpf
-        - telefone
-        - password
+        - nascimento
+        - senha
 
     UserUpdateInput:
       type: object
       properties:
-        username:
+        nome:
           type: string
-          description: Nome de usuário
-          example: "joaosilva"
+          description: Nome completo do usuário
+          example: "João Silva"
         email:
           type: string
           format: email
@@ -1214,8 +1214,14 @@ components:
           type: string
           description: Telefone do usuário
           example: "83987654321"
-        password:
+        nascimento:
           type: string
+          format: date
+          description: Data de nascimento
+          example: "1990-01-01"
+        senha:
+          type: string
+          minLength: 6
           description: Nova senha do usuário
           example: "novasenha123"
 

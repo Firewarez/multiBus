@@ -1,27 +1,25 @@
-import {Request, Response} from 'express';
-import * as loginService from '../services/login.services';
-import {z} from 'zod';
-
-
-
+import { Request, Response } from 'express';
+import * as userService from '../services/user.services';
+import { z } from 'zod';
 
 export const registerUser = async (req: Request, res: Response) => {
     const userSchema = z.object({
-        username: z.string().min(3),
+        nome: z.string().min(3),
         email: z.string().email(),
         cpf: z.string().min(11).max(14),
-        telefone: z.string().min(10).max(15),
-        nascimento: z.string().optional(),
-        password: z.string().min(6)
+        telefone: z.string().min(10).max(15).optional(),
+        nascimento: z.string().transform((val) => new Date(val)),
+        senha: z.string().min(6)
     });
     try {
         const userData = userSchema.parse(req.body);
-        const newUser = await loginService.registerUser(
-            userData.username,
+        const newUser = await userService.registerUser(
+            userData.nome,
             userData.email,
             userData.cpf,
             userData.telefone,
-            userData.password
+            userData.senha,
+            userData.nascimento
         );
         res.status(201).json(newUser);
     } catch (error) {
@@ -34,16 +32,17 @@ export const registerUser = async (req: Request, res: Response) => {
 }
 
 export const updateUser = async (req: Request, res: Response) => {
-    const userId = req.params.id;
-    const { username, email, cpf, telefone, password } = req.body;
+    const userId = parseInt(req.params.id);
+    const { nome, email, cpf, telefone, senha, nascimento } = req.body;
     try {
-        const updatedUser = await loginService.updateUser(
+        const updatedUser = await userService.updateUser(
             userId,
-            username,
+            nome,
             email,
             cpf,
             telefone,
-            password
+            senha,
+            nascimento ? new Date(nascimento) : undefined
         );
         res.status(200).json(updatedUser);
     } catch (error) {
