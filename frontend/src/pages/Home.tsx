@@ -22,6 +22,8 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import {
   Brightness4,
@@ -51,6 +53,8 @@ import {
   Home as HomeIcon,
   ArrowBack,
   DirectionsBus,
+  Logout,
+  AccountCircle,
 } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
@@ -63,6 +67,7 @@ export default function Home() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
   const [openInfo, setOpenInfo] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
 
   const toggleDrawer = () => setMobileOpen(!mobileOpen);
@@ -80,6 +85,19 @@ export default function Home() {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleProfileMenuClose();
+    navigate("/login");
+  };
 
   const drawerContent = (
     <div className={`flex flex-col justify-between h-full p-4 rounded-r-[25px] transition-all duration-300 ${
@@ -266,6 +284,7 @@ export default function Home() {
           borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)',
           mb: 2 
         }} />
+        
         <Typography 
           variant="caption" 
           className={darkMode ? "text-gray-400" : "text-green-100"}
@@ -547,15 +566,62 @@ export default function Home() {
                 </Card>
               </motion.div>
 
+              {/* Botão de Perfil com Menu Dropdown */}
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Tooltip title="Perfil">
+                  <IconButton 
+                    onClick={handleProfileMenuOpen}
+                    sx={{
+                      backgroundColor: darkMode ? "rgba(34, 197, 94, 0.1)" : "rgba(16, 185, 129, 0.1)",
+                      color: darkMode ? "#22c55e" : "#10b981",
+                      '&:hover': {
+                        backgroundColor: darkMode ? "rgba(34, 197, 94, 0.2)" : "rgba(16, 185, 129, 0.2)",
+                      }
+                    }}
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                </Tooltip>
+              </motion.div>
+
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleProfileMenuClose}
+                PaperProps={{
+                  sx: {
+                    backgroundColor: darkMode ? '#1e293b' : 'white',
+                    color: darkMode ? '#e2e8f0' : '#1e293b',
+                    borderRadius: 2,
+                    mt: 1,
+                    minWidth: 180,
+                  }
+                }}
+              >
+                <MenuItem onClick={() => { handleProfileMenuClose(); navigate("/perfil"); }}>
+                  <ListItemIcon>
+                    <Person fontSize="small" />
+                  </ListItemIcon>
+                  Meu Perfil
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleLogout} sx={{ color: '#ef4444' }}>
+                  <ListItemIcon>
+                    <Logout fontSize="small" sx={{ color: '#ef4444' }} />
+                  </ListItemIcon>
+                  Sair
+                </MenuItem>
+              </Menu>
+
               <Tooltip title={darkMode ? "Modo claro" : "Modo escuro"}>
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <IconButton 
                     onClick={toggleDarkMode}
                     sx={{
-                      backgroundColor: darkMode ? "rgba(34, 197, 94, 0.1)" : "rgba(100, 116, 139, 0.1)",
-                      color: darkMode ? "#22c55e" : "#64748b",
+                      backgroundColor: darkMode ? "rgba(100, 116, 139, 0.1)" : "rgba(100, 116, 139, 0.1)",
+                      color: darkMode ? "#cbd5e1" : "#64748b",
                       '&:hover': {
-                        backgroundColor: darkMode ? "rgba(34, 197, 94, 0.2)" : "rgba(100, 116, 139, 0.2)",
+                        backgroundColor: darkMode ? "rgba(100, 116, 139, 0.2)" : "rgba(100, 116, 139, 0.2)",
                       }
                     }}
                   >
@@ -566,6 +632,7 @@ export default function Home() {
             </div>
           </motion.div>
 
+          {/* Resto do código permanece igual... */}
           {/* Campo de busca */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

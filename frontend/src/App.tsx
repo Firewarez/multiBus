@@ -11,6 +11,9 @@ import PontosRecarga from "./pages/PontosRecarga";
 import MapaPrevisoes from "./pages/MapaPrevisoes";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ProfileProvider } from "./context/ProfileContext";
+import Login from "./pages/Login";  
+import Cadastro from "./pages/Cadastro";
+import RecuperarSenha from "./pages/RecuperarSenha";
 
 function App() {
   return (
@@ -28,6 +31,9 @@ function App() {
         <Route path="/recarga-cartao" element={<RecargaCartao />} />
         <Route path="/pontos-recarga" element={<PontosRecarga />} />
         <Route path="/mapa-previsoes" element={<MapaPrevisoes />} />
+        <Route path="/Login" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/recuperar-senha" element={<RecuperarSenha />} />
       </Routes>
     </BrowserRouter>
     </ThemeProvider>
