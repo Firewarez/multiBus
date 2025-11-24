@@ -1,8 +1,0 @@
-{
-    "type": "atraso",
-    "title": "Linha 301",
-    "description": "Atraso de 10 minutos devido ao trânsito intenso na Av. Cruz das Armas.",
-    "priority": "alta",
-    "affectedLines": "301, 1501",
-    "affectedStops": "Terminal Integração, Cruz das Armas"
-}
