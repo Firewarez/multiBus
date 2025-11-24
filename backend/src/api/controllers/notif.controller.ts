@@ -64,6 +64,8 @@ export const createNotification = async (req: Request, res: Response) => {
             affected_stops,
         } = req.body;
 
+        console.log("📝 Dados recebidos:", req.body);
+
         if (!type || !title) {
             return res
                 .status(400)
@@ -80,6 +82,8 @@ export const createNotification = async (req: Request, res: Response) => {
             return res.status(400).json({ error: "Prioridade inválida" });
         }
 
+        console.log("✅ Validações passaram, criando notificação...");
+
         const notification = await notifService.createNotification({
             type,
             title,
@@ -88,13 +92,16 @@ export const createNotification = async (req: Request, res: Response) => {
             priority,
             start_date,
             end_date,
-            affected_lines,
-            affected_stops,
+            affected_lines: affected_lines,
+            affected_stops: affected_stops,
         });
+
+        console.log("✅ Notificação criada:", notification);
 
         res.status(201).json(notification);
     } catch (error) {
-        console.error("Erro ao criar notificação:", error);
+        console.error("❌ Erro ao criar notificação:", error);
+        console.error("Stack trace:", (error as Error).stack);
         res.status(500).json({ error: "Erro ao criar notificação" });
     }
 };

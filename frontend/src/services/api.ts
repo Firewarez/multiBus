@@ -17,13 +17,43 @@ const api = axios.create({
 
 // Funções para buscar dados
 export const getLinhasAPI = async () => {
-    // Como a baseURL já tem /api/v1, aqui chamamos apenas /lines
     const response = await api.get('/lines');
     return response.data;
 };
 
 export const getParadasAPI = async () => {
     const response = await api.get('/stops');
+    return response.data;
+};
+
+export const getRotasAPI = async () => {
+    const response = await api.get('/routes');
+    return response.data;
+};
+
+export const getRotaByIdAPI = async (id: number) => {
+    const response = await api.get(`/routes/${id}`);
+    return response.data;
+};
+
+export const getRotasByLinhaAPI = async (lineId: number) => {
+    const response = await api.get(`/routes/line/${lineId}`);
+    return response.data;
+};
+
+export const getStopsByRotaAPI = async (routeId: number) => {
+    const response = await api.get(`/routes/${routeId}/stops`);
+    return response.data;
+};
+
+// Funções para notificações
+export const getNotificacoesAtivasAPI = async () => {
+    const response = await api.get('/notifications/active');
+    return response.data;
+};
+
+export const getAllNotificacoesAPI = async () => {
+    const response = await api.get('/notifications');
     return response.data;
 };
 

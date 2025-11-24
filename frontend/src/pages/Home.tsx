@@ -60,6 +60,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useProfile } from "../context/ProfileContext";
+import { getNotificacoesAtivasAPI } from '../services/api';
 
 export default function Home() {
   const { darkMode, toggleDarkMode } = useTheme();
@@ -68,6 +69,7 @@ export default function Home() {
   const [currentTime, setCurrentTime] = useState("");
   const [openInfo, setOpenInfo] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notifications, setNotifications] = useState<any[]>([]);
   const navigate = useNavigate();
 
   const toggleDrawer = () => setMobileOpen(!mobileOpen);
@@ -83,6 +85,22 @@ export default function Home() {
         })
       );
     }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const data = await getNotificacoesAtivasAPI();
+        setNotifications(data);
+      } catch (error) {
+        console.error('Erro ao carregar notificações:', error);
+      }
+    };
+    fetchNotifications();
+    
+    // Recarregar notificações a cada 5 minutos
+    const interval = setInterval(fetchNotifications, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -319,30 +337,21 @@ export default function Home() {
     },
   ];
 
-  const notifications = [
-    {
-      linha: "Linha 301",
-      msg: "Atraso de 10 minutos devido ao trânsito intenso.",
-      tipo: "alerta",
-      tempo: "Há 5 min"
-    },
-    {
-      linha: "Linha 510",
-      msg: "Rota alterada temporariamente devido a obras.",
-      tipo: "info",
-      tempo: "Há 15 min"
-    },
-    {
-      linha: "Linha 118",
-      msg: "Operação normalizada após problemas técnicos.",
-      tipo: "normal",
-      tempo: "Há 1 hora"
-    }
-  ];
+  // Função para calcular tempo relativo
+  const getTempoRelativo = (dataString: string) => {
+    const data = new Date(dataString);
+    const agora = new Date();
+    const diff = Math.floor((agora.getTime() - data.getTime()) / 1000); // diferença em segundos
+    
+    if (diff < 60) return 'Agora mesmo';
+    if (diff < 3600) return `Há ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `Há ${Math.floor(diff / 3600)} hora${Math.floor(diff / 3600) > 1 ? 's' : ''}`;
+    return `Há ${Math.floor(diff / 86400)} dia${Math.floor(diff / 86400) > 1 ? 's' : ''}`;
+  };
 
   const getNotificationStyle = (tipo: string) => {
-    switch (tipo) {
-      case "alerta":
+    switch (tipo.toLowerCase()) {
+      case "atraso":
         return {
           icon: <Schedule sx={{ color: "#f59e0b" }} />,
           badge: "Atraso",
@@ -350,15 +359,15 @@ export default function Home() {
           box: "border-yellow-500/30",
           gradient: "from-yellow-500/10 to-yellow-500/5"
         };
-      case "grave":
+      case "emergencia":
         return {
           icon: <Warning sx={{ color: "#ef4444" }} />,
-          badge: "Importante",
+          badge: "Emergência",
           badgeColor: "bg-red-500",
           box: "border-red-500/30",
           gradient: "from-red-500/10 to-red-500/5"
         };
-      case "info":
+      case "informacao":
         return {
           icon: <Info sx={{ color: "#3b82f6" }} />,
           badge: "Informação",
@@ -366,6 +375,15 @@ export default function Home() {
           box: "border-blue-500/30",
           gradient: "from-blue-500/10 to-blue-500/5"
         };
+      case "manutencao":
+        return {
+          icon: <Warning sx={{ color: "#f97316" }} />,
+          badge: "Manutenção",
+          badgeColor: "bg-orange-500",
+          box: "border-orange-500/30",
+          gradient: "from-orange-500/10 to-orange-500/5"
+        };
+      case "aviso":
       default:
         return {
           icon: <Info sx={{ color: "#10b981" }} />,
@@ -865,55 +883,80 @@ export default function Home() {
 
                   <div className="space-y-3 sm:space-y-4 flex-1">
                     <AnimatePresence>
-                      {notifications.map((notif, index) => {
-                        const style = getNotificationStyle(notif.tipo);
-                        
-                        return (
-                          <motion.div
-                            key={index}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            whileHover={{ scale: 1.02 }}
-                            className={`border rounded-xl p-3 sm:p-4 bg-gradient-to-r ${style.gradient} ${style.box} transition-all duration-300`}
-                          >
-                            <div className="flex items-start gap-3 sm:gap-4">
-                              <div className="pt-1">{style.icon}</div>
-                              
-                              <div className="flex-1 min-w-0">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
-                                  <span className={`px-2 py-1 text-xs text-white rounded-md ${style.badgeColor} self-start`}>
-                                    {style.badge}
-                                  </span>
-                                  <Typography variant="caption" sx={{ 
-                                    color: darkMode ? "#94a3b8" : "#64748b",
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                      {notifications.length === 0 ? (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-center py-8"
+                        >
+                          <Typography variant="body2" sx={{ 
+                            color: darkMode ? "#94a3b8" : "#64748b",
+                          }}>
+                            Nenhuma notificação ativa no momento
+                          </Typography>
+                        </motion.div>
+                      ) : (
+                        notifications.map((notif, index) => {
+                          const style = getNotificationStyle(notif.type);
+                          
+                          return (
+                            <motion.div
+                              key={notif.id}
+                              initial={{ opacity: 0, x: 20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                              whileHover={{ scale: 1.02 }}
+                              className={`border rounded-xl p-3 sm:p-4 bg-gradient-to-r ${style.gradient} ${style.box} transition-all duration-300`}
+                            >
+                              <div className="flex items-start gap-3 sm:gap-4">
+                                <div className="pt-1">{style.icon}</div>
+                                
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
+                                    <span className={`px-2 py-1 text-xs text-white rounded-md ${style.badgeColor} self-start`}>
+                                      {style.badge}
+                                    </span>
+                                    <Typography variant="caption" sx={{ 
+                                      color: darkMode ? "#94a3b8" : "#64748b",
+                                      fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                                    }}>
+                                      {getTempoRelativo(notif.createdAt)}
+                                    </Typography>
+                                  </div>
+                                  
+                                  <Typography variant="h6" sx={{ 
+                                    fontWeight: 'bold',
+                                    mb: 1,
+                                    fontSize: { xs: '1rem', sm: '1.125rem' },
+                                    color: darkMode ? "#e2e8f0" : "#1f2937"
                                   }}>
-                                    {notif.tempo}
+                                    {notif.title}
                                   </Typography>
+                                  
+                                  <Typography variant="body2" sx={{ 
+                                    color: darkMode ? "#cbd5e1" : "#374151",
+                                    fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                                    lineHeight: 1.4
+                                  }}>
+                                    {notif.description}
+                                  </Typography>
+
+                                  {notif.affectedLines && (
+                                    <Typography variant="caption" sx={{ 
+                                      color: darkMode ? "#94a3b8" : "#64748b",
+                                      fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                      mt: 1,
+                                      display: 'block'
+                                    }}>
+                                      Linhas afetadas: {notif.affectedLines}
+                                    </Typography>
+                                  )}
                                 </div>
-                                
-                                <Typography variant="h6" sx={{ 
-                                  fontWeight: 'bold',
-                                  mb: 1,
-                                  fontSize: { xs: '1rem', sm: '1.125rem' },
-                                  color: darkMode ? "#e2e8f0" : "#1f2937"
-                                }}>
-                                  {notif.linha}
-                                </Typography>
-                                
-                                <Typography variant="body2" sx={{ 
-                                  color: darkMode ? "#cbd5e1" : "#374151",
-                                  fontSize: { xs: '0.8rem', sm: '0.875rem' },
-                                  lineHeight: 1.4
-                                }}>
-                                  {notif.msg}
-                                </Typography>
                               </div>
-                            </div>
-                          </motion.div>
-                        );
-                      })}
+                            </motion.div>
+                          );
+                        })
+                      )}
                     </AnimatePresence>
                   </div>
                 </CardContent>

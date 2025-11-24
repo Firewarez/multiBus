@@ -1,55 +1,62 @@
-import pool from "../../config/db";
+import { prisma } from "../../config/prisma";
 
 export const getAllNotifications = async (filters?: {
     is_active?: boolean;
     type?: string;
     priority?: string;
 }) => {
-    let query = "SELECT * FROM notifications WHERE 1=1";
-    const params: any[] = [];
-    let paramCount = 1;
+    const where: any = {};
 
     if (filters?.is_active !== undefined) {
-        query += ` AND is_active = $${paramCount}`;
-        params.push(filters.is_active);
-        paramCount++;
+        where.isActive = filters.is_active;
     }
 
     if (filters?.type) {
-        query += ` AND type = $${paramCount}`;
-        params.push(filters.type);
-        paramCount++;
+        where.type = filters.type;
     }
 
     if (filters?.priority) {
-        query += ` AND priority = $${paramCount}`;
-        params.push(filters.priority);
-        paramCount++;
+        where.priority = filters.priority;
     }
 
-    query += " ORDER BY created_at DESC";
-
-    const result = await pool.query(query, params);
-    return result.rows;
+    return await prisma.notification.findMany({
+        where,
+        orderBy: {
+            createdAt: 'desc'
+        }
+    });
 };
 
 export const getActiveNotifications = async () => {
-    const query = `
-    SELECT * FROM notifications 
-    WHERE is_active = true 
-    AND (start_date IS NULL OR start_date <= NOW())
-    AND (end_date IS NULL OR end_date >= NOW())
-    ORDER BY priority DESC, created_at DESC
-  `;
-    const result = await pool.query(query);
-    return result.rows;
+    const now = new Date();
+    
+    return await prisma.notification.findMany({
+        where: {
+            isActive: true,
+            OR: [
+                { startDate: null },
+                { startDate: { lte: now } }
+            ],
+            AND: [
+                {
+                    OR: [
+                        { endDate: null },
+                        { endDate: { gte: now } }
+                    ]
+                }
+            ]
+        },
+        orderBy: [
+            { priority: 'desc' },
+            { createdAt: 'desc' }
+        ]
+    });
 };
 
 export const getNotificationById = async (id: number) => {
-    const result = await pool.query("SELECT * FROM notifications WHERE id = $1", [
-        id,
-    ]);
-    return result.rows[0];
+    return await prisma.notification.findUnique({
+        where: { id }
+    });
 };
 
 export const createNotification = async (notification: {
@@ -63,27 +70,19 @@ export const createNotification = async (notification: {
     affected_lines?: string;
     affected_stops?: string;
 }) => {
-    const query = `
-    INSERT INTO notifications (
-      type, title, description, is_active, priority, 
-      start_date, end_date, affected_lines, affected_stops
-    )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    RETURNING *
-  `;
-    const values = [
-        notification.type,
-        notification.title,
-        notification.description || null,
-        notification.is_active !== undefined ? notification.is_active : true,
-        notification.priority || "media",
-        notification.start_date || null,
-        notification.end_date || null,
-        notification.affected_lines || null,
-        notification.affected_stops || null,
-    ];
-    const result = await pool.query(query, values);
-    return result.rows[0];
+    return await prisma.notification.create({
+        data: {
+            type: notification.type,
+            title: notification.title,
+            description: notification.description || null,
+            isActive: notification.is_active !== undefined ? notification.is_active : true,
+            priority: notification.priority || "media",
+            startDate: notification.start_date ? new Date(notification.start_date) : null,
+            endDate: notification.end_date ? new Date(notification.end_date) : null,
+            affectedLines: notification.affected_lines || null,
+            affectedStops: notification.affected_stops || null,
+        }
+    });
 };
 
 export const updateNotification = async (
@@ -100,98 +99,73 @@ export const updateNotification = async (
         affected_stops?: string;
     }
 ) => {
-    const fields: string[] = [];
-    const values: any[] = [];
-    let paramCount = 1;
+    const data: any = {};
 
     if (notification.type !== undefined) {
-        fields.push(`type = $${paramCount}`);
-        values.push(notification.type);
-        paramCount++;
+        data.type = notification.type;
     }
 
     if (notification.title !== undefined) {
-        fields.push(`title = $${paramCount}`);
-        values.push(notification.title);
-        paramCount++;
+        data.title = notification.title;
     }
 
     if (notification.description !== undefined) {
-        fields.push(`description = $${paramCount}`);
-        values.push(notification.description);
-        paramCount++;
+        data.description = notification.description;
     }
 
     if (notification.is_active !== undefined) {
-        fields.push(`is_active = $${paramCount}`);
-        values.push(notification.is_active);
-        paramCount++;
+        data.isActive = notification.is_active;
     }
 
     if (notification.priority !== undefined) {
-        fields.push(`priority = $${paramCount}`);
-        values.push(notification.priority);
-        paramCount++;
+        data.priority = notification.priority;
     }
 
     if (notification.start_date !== undefined) {
-        fields.push(`start_date = $${paramCount}`);
-        values.push(notification.start_date);
-        paramCount++;
+        data.startDate = notification.start_date ? new Date(notification.start_date) : null;
     }
 
     if (notification.end_date !== undefined) {
-        fields.push(`end_date = $${paramCount}`);
-        values.push(notification.end_date);
-        paramCount++;
+        data.endDate = notification.end_date ? new Date(notification.end_date) : null;
     }
 
     if (notification.affected_lines !== undefined) {
-        fields.push(`affected_lines = $${paramCount}`);
-        values.push(notification.affected_lines);
-        paramCount++;
+        data.affectedLines = notification.affected_lines;
     }
 
     if (notification.affected_stops !== undefined) {
-        fields.push(`affected_stops = $${paramCount}`);
-        values.push(notification.affected_stops);
-        paramCount++;
+        data.affectedStops = notification.affected_stops;
     }
 
-    fields.push(`updated_at = NOW()`);
-
-    if (fields.length === 1) {
-        // Apenas updated_at foi adicionado
+    if (Object.keys(data).length === 0) {
         throw new Error("Nenhum campo para atualizar");
     }
 
-    const query = `
-    UPDATE notifications 
-    SET ${fields.join(", ")}
-    WHERE id = $${paramCount}
-    RETURNING *
-  `;
-    values.push(id);
-
-    const result = await pool.query(query, values);
-    return result.rows[0];
+    return await prisma.notification.update({
+        where: { id },
+        data
+    });
 };
 
 export const deleteNotification = async (id: number) => {
-    const result = await pool.query(
-        "DELETE FROM notifications WHERE id = $1 RETURNING *",
-        [id]
-    );
-    return result.rows[0];
+    return await prisma.notification.delete({
+        where: { id }
+    });
 };
 
 export const toggleNotificationStatus = async (id: number) => {
-    const query = `
-    UPDATE notifications 
-    SET is_active = NOT is_active, updated_at = NOW()
-    WHERE id = $1
-    RETURNING *
-  `;
-    const result = await pool.query(query, [id]);
-    return result.rows[0];
+    const notification = await prisma.notification.findUnique({
+        where: { id }
+    });
+
+    if (!notification) {
+        return null;
+    }
+
+    return await prisma.notification.update({
+        where: { id },
+        data: {
+            isActive: !notification.isActive
+        }
+    });
 };
