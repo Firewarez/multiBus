@@ -1,37 +1,58 @@
-// Importa a conexão com o banco de dados configurado em outro arquivo
-import db from "../../config/db";
+// 1. Mudamos a importação: Sai 'db' (pg), entra 'prisma'
+import { prisma } from "../../config/prisma";
 
-// 1. Função para buscar todas as linhas no banco de dados
+// 2. Buscar todas as linhas
 export const getAllLines = async () => {
-    const result = await db.query("SELECT * FROM lines ORDER BY id");
-    return result.rows;
+    // SQL ANTES: SELECT * FROM lines ORDER BY id
+    return await prisma.line.findMany({
+        orderBy: {
+            id: 'asc' // Ordenação crescente
+        }
+    });
 };
 
-// 2. Função para buscar uma linha específica pelo ID
+// 3. Buscar linha por ID
 export const getLineById = async (id: number) => {
-    const result = await db.query("SELECT * FROM lines WHERE id = $1", [id]);
-    return result.rows[0];
+    // SQL ANTES: SELECT * FROM lines WHERE id = $1
+    return await prisma.line.findUnique({
+        where: {
+            id: id
+        }
+    });
 };
 
-// 3. Função para inserir uma nova linha no banco
+// 4. Criar nova linha
 export const createLine = async (line: { code: string; name: string }) => {
-    const result = await db.query(
-        "INSERT INTO lines (code, name) VALUES ($1, $2) RETURNING *",
-        [line.code, line.name]
-    );
-    return result.rows[0];
+    // SQL ANTES: INSERT INTO ... RETURNING *
+    // O Prisma já retorna o objeto criado automaticamente
+    return await prisma.line.create({
+        data: {
+            code: line.code,
+            name: line.name
+        }
+    });
 };
 
-// 4. Função para atualizar uma linha existente
+// 5. Atualizar linha existente
 export const updateLine = async (id: number, line: { code: string; name: string }) => {
-    const result = await db.query(
-        "UPDATE lines SET code = $1, name = $2 WHERE id = $3 RETURNING *",
-        [line.code, line.name, id]
-    );
-    return result.rows[0];
+    // SQL ANTES: UPDATE ... WHERE id = $3 RETURNING *
+    return await prisma.line.update({
+        where: {
+            id: id
+        },
+        data: {
+            code: line.code,
+            name: line.name
+        }
+    });
 };
 
-// 5. Função para deletar uma linha pelo ID
+// 6. Deletar linha
 export const deleteLine = async (id: number) => {
-    await db.query("DELETE FROM lines WHERE id = $1", [id]);
+    // SQL ANTES: DELETE FROM lines WHERE id = $1
+    await prisma.line.delete({
+        where: {
+            id: id
+        }
+    });
 };
