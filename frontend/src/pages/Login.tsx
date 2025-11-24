@@ -99,15 +99,28 @@ export default function Login() {
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Simular credenciais válidas (em uma aplicação real, isso viria da API)
-      const isValidLogin = formData.email === "usuario@exemplo.com" && formData.password === "123456";
+      // ✅ Aceitar QUALQUER e-mail válido e senha com pelo menos 6 caracteres
+      const isValidLogin = /\S+@\S+\.\S+/.test(formData.email) && formData.password.length >= 6;
       
       if (isValidLogin) {
         // Login bem-sucedido - salvar no localStorage se "Lembrar-me" estiver marcado
         if (formData.rememberMe) {
           localStorage.setItem('userEmail', formData.email);
+          localStorage.setItem('userLoggedIn', 'true');
         }
-        navigate("/home");
+        
+        // Salvar informações do usuário para usar no Home
+        const userInfo = {
+          email: formData.email,
+          nome: formData.email.split('@')[0], // Usa a parte antes do @ como nome
+          telefone: "(11) 99999-9999", // Valor padrão
+          cidade: "São Paulo", // Valor padrão
+          uf: "SP" // Valor padrão
+        };
+        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+        
+        // ✅ CORREÇÃO: Navegar para a URL raiz
+        window.location.href = "http://localhost:5173/";
       } else {
         setLoginError("E-mail ou senha incorretos. Tente novamente.");
       }
@@ -137,14 +150,6 @@ export default function Login() {
       }));
     }
   }, []);
-
-  const handleDemoLogin = () => {
-    setFormData({
-      email: "usuario@exemplo.com",
-      password: "123456",
-      rememberMe: false
-    });
-  };
 
   return (
     <Box
@@ -316,37 +321,6 @@ export default function Login() {
               >
                 Entre na sua conta para continuar
               </Typography>
-
-              {/* Demo Login Button */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  onClick={handleDemoLogin}
-                  sx={{
-                    color: darkMode ? "#f59e0b" : "#d97706",
-                    borderColor: darkMode ? "#f59e0b" : "#d97706",
-                    borderRadius: 2,
-                    py: 1,
-                    fontSize: '0.875rem',
-                    fontWeight: 'medium',
-                    textTransform: 'none',
-                    mb: 2,
-                    '&:hover': {
-                      borderColor: darkMode ? "#f59e0b" : "#d97706",
-                      backgroundColor: darkMode ? "rgba(245, 158, 11, 0.1)" : "rgba(217, 119, 6, 0.1)",
-                    },
-                  }}
-                >
-                  Usar credenciais de demonstração
-                </Button>
-              </motion.div>
 
               {/* Alert de erro */}
               {loginError && (

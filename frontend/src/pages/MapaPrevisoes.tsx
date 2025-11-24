@@ -33,6 +33,7 @@ import MyLocationIcon from "@mui/icons-material/MyLocation";
 import { Brightness4, Brightness7, ArrowBack } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { getLinhasAPI, getParadasAPI } from "../services/api";
+import { useTheme } from "../context/ThemeContext"; // Importar o contexto de tema
 
 // Ajuste do ícone padrão do Leaflet (evita problema com assets)
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -496,17 +497,11 @@ const criarIconeLinha = (cor: string) => {
   });
 };
 
-// Interface para parada
-interface Parada {
-  id: string;
-  nome: string;
-  lat: number;
-  lng: number;
-  linhas: string[];
-  movimentacao: string;
-}
-
 export default function LinhasFavoritas() {
+  // Usar o contexto de tema global
+  const { darkMode, toggleDarkMode } = useTheme();
+  const navigate = useNavigate();
+  
   // estado local
   const [linhas, setLinhas] = useState<Linha[]>([]);
   const [paradas, setParadas] = useState<Parada[]>([]);
@@ -525,10 +520,6 @@ export default function LinhasFavoritas() {
   const [mapaInstancia, setMapaInstancia] = useState<any>(null);
   const [filtroAtivo, setFiltroAtivo] = useState<string>("todos");
   const [mostrarApenasFavoritos, setMostrarApenasFavoritos] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-  const navigate = useNavigate();
-
-  const toggleDarkMode = () => setDarkMode(!darkMode);
 
   // carregar favoritos do localStorage (se houver)
   useEffect(() => {
