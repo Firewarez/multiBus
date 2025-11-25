@@ -148,10 +148,13 @@ export default function Cadastro() {
         // Criar data de nascimento (placeholder - você pode adicionar campo no form depois)
         const nascimento = new Date('2000-01-01').toISOString();
 
+        // Gerar CPF único temporário (timestamp + random)
+        const cpfTemporario = `${Date.now()}${Math.floor(Math.random() * 100)}`.slice(0, 11).padStart(11, '0');
+
         const userData = {
           nome: formData.nome,
           email: formData.email,
-          cpf: "00000000000", // Placeholder - adicione campo CPF no form
+          cpf: cpfTemporario, // CPF temporário único até adicionar campo no form
           telefone: telefoneNumeros,
           senha: formData.password,
           nascimento: nascimento
