@@ -103,6 +103,10 @@ export default function Login() {
       const isValidLogin = /\S+@\S+\.\S+/.test(formData.email) && formData.password.length >= 6;
       
       if (isValidLogin) {
+        // ✅ CORREÇÃO: Salvar userToken (que o ProtectedRoute procura)
+        const userToken = 'mock-jwt-token-' + Date.now();
+        localStorage.setItem('userToken', userToken);
+        
         // Login bem-sucedido - salvar no localStorage se "Lembrar-me" estiver marcado
         if (formData.rememberMe) {
           localStorage.setItem('userEmail', formData.email);
@@ -119,8 +123,8 @@ export default function Login() {
         };
         localStorage.setItem('userInfo', JSON.stringify(userInfo));
         
-        // ✅ CORREÇÃO: Navegar para a URL raiz
-        window.location.href = "http://localhost:5173/";
+        // ✅ CORREÇÃO: Navegar usando navigate (não window.location.href)
+        navigate("/");
       } else {
         setLoginError("E-mail ou senha incorretos. Tente novamente.");
       }
