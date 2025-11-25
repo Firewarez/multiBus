@@ -119,6 +119,7 @@ export default function Home() {
 
   const handleLogout = () => {
     handleProfileMenuClose();
+    localStorage.removeItem('userToken'); // Limpa o token
     navigate("/login");
   };
 
@@ -607,6 +608,7 @@ export default function Home() {
                 </Tooltip>
               </motion.div>
 
+              {/* MENU CORRIGIDO - Fechamento correto das tags */}
               <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
@@ -635,6 +637,7 @@ export default function Home() {
                   Sair
                 </MenuItem>
               </Menu>
+              {/* FIM DO MENU */}
 
               <Tooltip title={darkMode ? "Modo claro" : "Modo escuro"}>
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
