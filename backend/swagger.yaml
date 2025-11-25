@@ -799,6 +799,59 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /api/v1/users/login:
+    post:
+      summary: Login de usuário
+      description: Autentica um usuário no sistema
+      tags:
+        - Usuários
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - senha
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "joao@email.com"
+                senha:
+                  type: string
+                  example: "senha123"
+      responses:
+        '200':
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Login realizado com sucesso"
+                  usuario:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Credenciais inválidas"
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /api/v1/users:
     post:
       summary: Registra um novo usuário
@@ -829,6 +882,19 @@ paths:
                     type: array
                     items:
                       type: object
+        '409':
+          description: E-mail já cadastrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "E-mail já cadastrado"
+                  message:
+                    type: string
+                    example: "Este e-mail já está em uso. Tente fazer login ou use outro e-mail."
         '500':
           description: Erro interno do servidor
           content:
@@ -837,6 +903,41 @@ paths:
                 $ref: '#/components/schemas/Error'
 
   /api/v1/users/{id}:
+    get:
+      summary: Busca usuário por ID
+      description: Retorna os dados de um usuário específico
+      tags:
+        - Usuários
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do usuário
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dados do usuário
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Usuário não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Usuário não encontrado"
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     put:
       summary: Atualiza dados do usuário
       description: Atualiza as informações de um usuário existente
