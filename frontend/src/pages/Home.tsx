@@ -61,7 +61,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useProfile } from "../context/ProfileContext";
 import { useAuth } from "../context/AuthContext";
-import { getNotificacoesAtivasAPI } from '../services/api';
+import { getNotificacoesAtivasAPI, getUserByIdAPI } from '../services/api';
 
 export default function Home() {
   const { darkMode, toggleDarkMode } = useTheme();
@@ -72,6 +72,7 @@ export default function Home() {
   const [openInfo, setOpenInfo] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [userData, setUserData] = useState<any>(null);
   const navigate = useNavigate();
 
   // ✅ CORREÇÃO: Removida a verificação duplicada de autenticação
@@ -113,6 +114,24 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // Carregar dados do usuário da API
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userId = localStorage.getItem('userId');
+        if (userId) {
+          const data = await getUserByIdAPI(parseInt(userId));
+          setUserData(data);
+          // Atualizar localStorage com dados reais
+          localStorage.setItem('userInfo', JSON.stringify(data));
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+      }
+    };
+    loadUserData();
+  }, []);
+
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -135,11 +154,21 @@ export default function Home() {
     }`}>
       <div>
         <div className="text-center mb-8">
+          <Avatar
+            src={getProfileImage(userData?.nome || profile.nome)}
+            sx={{
+              width: 80,
+              height: 80,
+              mx: 'auto',
+              mb: 2,
+              border: `3px solid ${darkMode ? "#22c55e" : "white"}`,
+            }}
+          />
           <Typography 
-            variant="h5" 
+            variant="h6" 
             className={`font-bold ${darkMode ? "text-green-400" : "text-white"}`}
           >
-            MultiBus
+            {userData?.nome || profile.nome}
           </Typography>
           <Typography 
             variant="caption" 

@@ -13,6 +13,7 @@ import {
   Link,
   Divider,
   Tooltip,
+  Alert,
 } from "@mui/material";
 import {
   Visibility,
@@ -30,6 +31,7 @@ import {
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { registerAPI } from "../services/api";
 
 export default function Cadastro() {
   const { darkMode, toggleDarkMode } = useTheme();
@@ -56,6 +58,8 @@ export default function Cadastro() {
     confirmPassword: "",
     acceptTerms: "",
   });
+  const [registerError, setRegisterError] = useState("");
+  const [registerSuccess, setRegisterSuccess] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -131,12 +135,46 @@ export default function Cadastro() {
     return !Object.values(newErrors).some(error => error !== "");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setRegisterError("");
+    setRegisterSuccess(false);
+
     if (validateForm()) {
-      // Simular cadastro bem-sucedido
-      console.log("Cadastro realizado:", formData);
-      navigate("/login");
+      try {
+        // Remover formatação do telefone (apenas números)
+        const telefoneNumeros = formData.telefone.replace(/\D/g, '');
+
+        // Criar data de nascimento (placeholder - você pode adicionar campo no form depois)
+        const nascimento = new Date('2000-01-01').toISOString();
+
+        const userData = {
+          nome: formData.nome,
+          email: formData.email,
+          cpf: "00000000000", // Placeholder - adicione campo CPF no form
+          telefone: telefoneNumeros,
+          senha: formData.password,
+          nascimento: nascimento
+        };
+
+        const response = await registerAPI(userData);
+        
+        if (response) {
+          setRegisterSuccess(true);
+          setTimeout(() => {
+            navigate("/login");
+          }, 2000);
+        }
+      } catch (error: any) {
+        console.error("Erro no cadastro:", error);
+        if (error.response?.status === 400) {
+          setRegisterError("Dados inválidos. Verifique os campos.");
+        } else if (error.response?.data?.message) {
+          setRegisterError(error.response.data.message);
+        } else {
+          setRegisterError("Erro ao criar conta. Tente novamente.");
+        }
+      }
     }
   };
 
@@ -324,6 +362,18 @@ export default function Cadastro() {
               >
                 Preencha os dados abaixo para criar sua conta
               </Typography>
+
+              {registerError && (
+                <Alert severity="error" sx={{ mb: 3 }}>
+                  {registerError}
+                </Alert>
+              )}
+
+              {registerSuccess && (
+                <Alert severity="success" sx={{ mb: 3 }}>
+                  Conta criada com sucesso! Redirecionando para login...
+                </Alert>
+              )}
 
               <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

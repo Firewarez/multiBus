@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -16,6 +16,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
 import {
   Brightness4,
@@ -34,6 +36,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "../context/ThemeContext";
 import { useProfile } from "../context/ProfileContext";
+import { getUserByIdAPI, updateUserAPI } from "../services/api";
 
 // Validação Zod
 const profileSchema = z.object({
@@ -64,6 +67,8 @@ export default function Perfil() {
   const [isEditing, setIsEditing] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -80,11 +85,75 @@ export default function Perfil() {
     defaultValues: profile,
   });
 
-  const onSubmit = (data: ProfileData) => {
-    updateProfile(data);
-    setSaveSuccess(true);
-    setIsEditing(false);
-    setTimeout(() => setSaveSuccess(false), 3000);
+  // Carregar dados do usuário da API
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        setLoading(true);
+        const userId = localStorage.getItem('userId');
+        
+        if (!userId) {
+          navigate('/login');
+          return;
+        }
+
+        const userData = await getUserByIdAPI(parseInt(userId));
+        
+        if (userData) {
+          const formattedData = {
+            nome: userData.nome || '',
+            email: userData.email || '',
+            cpf: userData.cpf || '',
+            telefone: userData.telefone || '',
+            endereco: profile.endereco || '',
+            numero: profile.numero || '',
+            bairro: profile.bairro || '',
+            cep: profile.cep || '',
+            cidade: profile.cidade || '',
+            uf: profile.uf || '',
+          };
+          
+          updateProfile(formattedData as any);
+          reset(formattedData);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+        setError('Erro ao carregar dados do perfil.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, []);
+
+  const onSubmit = async (data: ProfileData) => {
+    try {
+      setError("");
+      const userId = localStorage.getItem('userId');
+      
+      if (!userId) {
+        navigate('/login');
+        return;
+      }
+
+      const updateData = {
+        nome: data.nome,
+        email: data.email,
+        cpf: data.cpf,
+        telefone: data.telefone,
+      };
+
+      await updateUserAPI(parseInt(userId), updateData);
+      
+      updateProfile(data as any);
+      setSaveSuccess(true);
+      setIsEditing(false);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (error: any) {
+      console.error('Erro ao atualizar perfil:', error);
+      setError('Erro ao salvar alterações. Tente novamente.');
+    }
   };
 
   const handleEdit = () => setIsEditing(true);
@@ -224,15 +293,49 @@ export default function Perfil() {
           </div>
         </motion.div>
 
-        <div className="grid lg:grid-cols-4 gap-6">
-          {/* Coluna lateral */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="lg:col-span-1"
-          >
-            <Card
+        {/* Loading State */}
+        {loading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+            <CircularProgress sx={{ color: darkMode ? "#22c55e" : "#10b981" }} />
+          </Box>
+        )}
+
+        {/* Error Message */}
+        {error && !loading && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
+
+        {/* Success Message */}
+        <AnimatePresence>
+          {saveSuccess && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              <Alert 
+                severity="success" 
+                sx={{ mb: 3 }}
+                icon={<CheckCircle />}
+              >
+                Perfil atualizado com sucesso!
+              </Alert>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {!loading && (
+          <div className="grid lg:grid-cols-4 gap-6">
+            {/* Coluna lateral */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="lg:col-span-1"
+            >
+              <Card
               className="shadow-xl rounded-2xl sticky top-8"
               sx={{
                 background: darkMode
@@ -657,11 +760,11 @@ export default function Perfil() {
               </CardContent>
             </Card>
           </motion.div>
-        </div>
-      </Container>
+          </div>
+        )}
 
-      {/* Dialog para alterar foto */}
-      <Dialog 
+        {/* Dialog para alterar foto */}
+        <Dialog 
         open={photoDialogOpen} 
         onClose={() => setPhotoDialogOpen(false)}
         maxWidth="sm"
@@ -757,29 +860,30 @@ export default function Perfil() {
         </DialogActions>
       </Dialog>
 
-      {/* FAB para voltar */}
-      <motion.div
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.6, type: "spring" }}
-        className="fixed bottom-6 left-6"
-        style={{ zIndex: 9999 }}
-      >
-        <Tooltip title="Voltar">
-          <Fab
-            onClick={() => navigate(-1)}
-            sx={{
-              backgroundColor: darkMode ? "#22c55e" : "#10b981",
-              color: "white",
-              '&:hover': {
-                backgroundColor: darkMode ? "#16a34a" : "#059669",
-              }
-            }}
-          >
-            <ArrowBack />
-          </Fab>
-        </Tooltip>
-      </motion.div>
+        {/* FAB para voltar */}
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.6, type: "spring" }}
+          className="fixed bottom-6 left-6"
+          style={{ zIndex: 9999 }}
+        >
+          <Tooltip title="Voltar">
+            <Fab
+              onClick={() => navigate(-1)}
+              sx={{
+                backgroundColor: darkMode ? "#22c55e" : "#10b981",
+                color: "white",
+                '&:hover': {
+                  backgroundColor: darkMode ? "#16a34a" : "#059669",
+                }
+              }}
+            >
+              <ArrowBack />
+            </Fab>
+          </Tooltip>
+        </motion.div>
+      </Container>
     </Box>
   );
 }
