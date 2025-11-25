@@ -72,6 +72,17 @@ export default function Home() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const navigate = useNavigate();
 
+  // ✅ CORREÇÃO: Verificar se está autenticado ao carregar a página
+  useEffect(() => {
+    const token = localStorage.getItem('userToken');
+    if (!token) {
+      console.log('🚫 Não autenticado, redirecionando para login...');
+      navigate('/login');
+      return;
+    }
+    console.log('✅ Usuário autenticado, token:', token);
+  }, [navigate]);
+
   // Efeito para rolar para o topo quando o componente for montado
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -119,7 +130,11 @@ export default function Home() {
 
   const handleLogout = () => {
     handleProfileMenuClose();
-    localStorage.removeItem('userToken'); // Limpa o token
+    // ✅ CORREÇÃO: Limpar todos os dados do localStorage
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userLoggedIn');
+    localStorage.removeItem('userInfo');
     navigate("/login");
   };
 
