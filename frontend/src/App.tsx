@@ -11,35 +11,32 @@ import PontosRecarga from "./pages/PontosRecarga";
 import MapaPrevisoes from "./pages/MapaPrevisoes";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ProfileProvider } from "./context/ProfileContext";
-import { AuthProvider, useAuth } from "./context/AuthContext"; // NOVO
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";  
 import Cadastro from "./pages/Cadastro";
 import RecuperarSenha from "./pages/RecuperarSenha";
 import NotFound from "./pages/NotFound";
 
-// Componente de proteção de rotas COM DEBUG
+// Componente de proteção de rotas CORRIGIDO
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = localStorage.getItem('userToken');
+  const { isAuthenticated } = useAuth();
   
-  // DEBUG
   console.log('=== DEBUG PROTECTED ROUTE ===');
-  console.log('userToken:', isAuthenticated);
-  console.log('localStorage completo:', localStorage);
-  console.log('URL atual:', window.location.href);
+  console.log('isAuthenticated:', isAuthenticated);
   console.log('=============================');
   
   if (!isAuthenticated) {
-    console.log('❌ REDIRECIONANDO PARA LOGIN - Token não encontrado');
+    console.log('❌ REDIRECIONANDO PARA LOGIN - Usuário não autenticado');
     return <Navigate to="/login" replace />;
   }
   
-  console.log('✅ ACESSO PERMITIDO - Token encontrado');
+  console.log('✅ ACESSO PERMITIDO - Usuário autenticado');
   return <>{children}</>;
 };
 
 function App() {
   return (
-    <AuthProvider> {/* NOVO - Envolve tudo */}
+    <AuthProvider>
       <ProfileProvider>
         <ThemeProvider>
           <Routes>

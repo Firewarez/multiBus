@@ -25,12 +25,15 @@ import {
   Brightness7,
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const { darkMode, toggleDarkMode } = useTheme();
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -43,6 +46,9 @@ export default function Login() {
   });
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
+
+  // ✅ CORREÇÃO: Redirecionar para a página anterior ou home
+  const from = location.state?.from?.pathname || "/";
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -103,9 +109,9 @@ export default function Login() {
       const isValidLogin = /\S+@\S+\.\S+/.test(formData.email) && formData.password.length >= 6;
       
       if (isValidLogin) {
-        // ✅ CORREÇÃO: Salvar userToken (que o ProtectedRoute procura)
+        // ✅ CORREÇÃO: Usar função do AuthContext
         const userToken = 'mock-jwt-token-' + Date.now();
-        localStorage.setItem('userToken', userToken);
+        login(userToken);
         
         // Login bem-sucedido - salvar no localStorage se "Lembrar-me" estiver marcado
         if (formData.rememberMe) {
@@ -123,8 +129,8 @@ export default function Login() {
         };
         localStorage.setItem('userInfo', JSON.stringify(userInfo));
         
-        // ✅ CORREÇÃO: Navegar usando navigate (não window.location.href)
-        navigate("/");
+        // ✅ CORREÇÃO: Navegar para a página anterior ou home
+        navigate(from, { replace: true });
       } else {
         setLoginError("E-mail ou senha incorretos. Tente novamente.");
       }
@@ -596,7 +602,7 @@ export default function Login() {
                 >
                   Ao entrar, você concorda com nossos{" "}
                   <Link
-                    href="/termos"
+                    href="/termos-uso"
                     sx={{
                       color: darkMode ? "#22c55e" : "#10b981",
                       textDecoration: "none",
@@ -609,7 +615,7 @@ export default function Login() {
                   </Link>{" "}
                   e{" "}
                   <Link
-                    href="/privacidade"
+                    href="/politica-privacidade"
                     sx={{
                       color: darkMode ? "#22c55e" : "#10b981",
                       textDecoration: "none",

@@ -14,17 +14,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Verificar se existe token ao carregar a aplicação
     const token = localStorage.getItem('userToken');
+    console.log('🔐 AuthProvider - Token encontrado:', !!token);
     setIsAuthenticated(!!token);
   }, []);
 
   const login = (token: string) => {
     localStorage.setItem('userToken', token);
     setIsAuthenticated(true);
+    console.log('🔐 Login realizado - Token salvo');
   };
 
   const logout = () => {
     localStorage.removeItem('userToken');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userLoggedIn');
+    localStorage.removeItem('userInfo');
     setIsAuthenticated(false);
+    console.log('🔐 Logout realizado - Dados removidos');
   };
 
   return (

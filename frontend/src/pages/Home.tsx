@@ -60,11 +60,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useProfile } from "../context/ProfileContext";
+import { useAuth } from "../context/AuthContext";
 import { getNotificacoesAtivasAPI } from '../services/api';
 
 export default function Home() {
   const { darkMode, toggleDarkMode } = useTheme();
   const { profile, getProfileImage } = useProfile();
+  const { logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
   const [openInfo, setOpenInfo] = useState(false);
@@ -72,16 +74,7 @@ export default function Home() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const navigate = useNavigate();
 
-  // ✅ CORREÇÃO: Verificar se está autenticado ao carregar a página
-  useEffect(() => {
-    const token = localStorage.getItem('userToken');
-    if (!token) {
-      console.log('🚫 Não autenticado, redirecionando para login...');
-      navigate('/login');
-      return;
-    }
-    console.log('✅ Usuário autenticado, token:', token);
-  }, [navigate]);
+  // ✅ CORREÇÃO: Removida a verificação duplicada de autenticação
 
   // Efeito para rolar para o topo quando o componente for montado
   useEffect(() => {
@@ -130,11 +123,7 @@ export default function Home() {
 
   const handleLogout = () => {
     handleProfileMenuClose();
-    // ✅ CORREÇÃO: Limpar todos os dados do localStorage
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userLoggedIn');
-    localStorage.removeItem('userInfo');
+    logout(); // Usar função do contexto
     navigate("/login");
   };
 
@@ -623,7 +612,7 @@ export default function Home() {
                 </Tooltip>
               </motion.div>
 
-              {/* MENU CORRIGIDO - Fechamento correto das tags */}
+              {/* Menu de Perfil */}
               <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
@@ -652,7 +641,6 @@ export default function Home() {
                   Sair
                 </MenuItem>
               </Menu>
-              {/* FIM DO MENU */}
 
               <Tooltip title={darkMode ? "Modo claro" : "Modo escuro"}>
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -673,7 +661,6 @@ export default function Home() {
             </div>
           </motion.div>
 
-          {/* Resto do código permanece igual... */}
           {/* Campo de busca */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
