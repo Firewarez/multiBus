@@ -31,8 +31,6 @@
 - [Scripts Disponíveis](#-scripts-disponíveis)
 - [Dados de Exemplo](#-dados-de-exemplo)
 - [Desenvolvimento](#-desenvolvimento)
-- [Solução de Problemas](#-solução-de-problemas)
-- [Contribuindo](#-contribuindo)
 - [Licença](#-licença)
 
 ---
@@ -411,7 +409,7 @@ multiBus/
 
 | Método | Endpoint | Descrição |
 |--------|----------|-----------|
-| `POST` | `/api/v1/login` | Autenticação de usuário |
+| `POST` | `/api/v1/users` | Autenticação de usuário |
 
 ### 📖 Documentação Interativa
 
@@ -471,12 +469,6 @@ npm run dev              # Inicia servidor com hot-reload (nodemon)
 npm run build            # Compila TypeScript → JavaScript
 npm start                # Executa build compilado
 
-# Database
-npm run seed:city        # Popula com dados de João Pessoa
-npm run seed             # Popula com dados genéricos
-npm run create:tables    # Cria estrutura de tabelas
-npm run test:connection  # Testa conexão com PostgreSQL
-```
 
 ### Frontend
 
@@ -489,50 +481,7 @@ npm run lint             # Executa ESLint
 
 ---
 
-## 🌱 Dados de Exemplo
 
-### João Pessoa (SEMOB-JP)
-
-O comando `npm run seed:city` popula o banco com dados reais da cidade:
-
-#### 📍 **14 Paradas Estratégicas**
-
-| ID | Nome | Latitude | Longitude |
-|----|------|----------|-----------|
-| 1 | Terminal de Integração | -7.1195 | -34.8450 |
-| 2 | Centro - Praça João Pessoa | -7.1194 | -34.8792 |
-| 3 | Tambaú | -7.0965 | -34.8350 |
-| 4 | Cabo Branco | -7.1417 | -34.7967 |
-| 5 | Manaíra | -7.0889 | -34.8306 |
-| 6 | UFPB - Campus I | -7.1378 | -34.8460 |
-| ... | ... | ... | ... |
-
-#### 🚌 **9 Linhas Oficiais**
-
-| Número | Nome | Rotas |
-|--------|------|-------|
-| 1300 | Terminal - Tambaú | IDA / VOLTA |
-| 1301 | Terminal - Cabo Branco | IDA / VOLTA |
-| 1400 | Terminal - Manaíra | IDA / VOLTA |
-| 513 | Terminal - UFPB | IDA / VOLTA |
-| 511 | Terminal - Centro | IDA / VOLTA |
-| 1500 | Terminal - Epitácio Pessoa | IDA / VOLTA |
-| 510 | Terminal - Cruz das Armas | IDA / VOLTA |
-| 1100 | Terminal - Shopping Tambiá | IDA / VOLTA |
-| 3300 | Terminal - Mangabeira | IDA / VOLTA |
-
-#### 🎯 Processo de Seed
-
-O script executa automaticamente:
-
-1. 🧹 **Limpeza**: Remove dados anteriores (CASCADE)
-2. 📍 **Geocoding**: Busca coordenadas via Google Maps API
-3. 🚏 **Paradas**: Insere 14 paradas georeferenciadas
-4. 🚌 **Linhas**: Cria 9 linhas oficiais
-5. 🔄 **Rotas**: Gera 18 rotas (IDA + VOLTA)
-6. ✅ **Validação**: Verifica integridade dos dados
-
----
 
 ## 💻 Desenvolvimento
 
@@ -574,228 +523,8 @@ http GET http://localhost:3000/api/v1/lines
 http GET http://localhost:3000/api/v1/routes/1/stops
 ```
 
-### 🔍 Debugging
 
-**Backend (VS Code):**
-```json
-{
-  "type": "node",
-  "request": "launch",
-  "name": "Debug Backend",
-  "runtimeExecutable": "npm",
-  "runtimeArgs": ["run", "dev"],
-  "cwd": "${workspaceFolder}/backend",
-  "console": "integratedTerminal"
-}
-```
 
-**Frontend (Browser DevTools):**
-- React DevTools extension recomendada
-- Redux DevTools (se implementado futuramente)
-
----
-
-## 🔧 Solução de Problemas
-
-### ❌ Problema: "Table doesn't exist"
-
-**Sintomas:**
-```
-ERROR: relation "stops" does not exist
-```
-
-**Soluções:**
-
-1. ✅ Executar seed completo:
-   ```bash
-   cd backend
-   npm run seed:city
-   ```
-
-2. ✅ Ou criar tabelas manualmente:
-   ```bash
-   npm run create:tables
-   ```
-
----
-
-### ❌ Problema: "Port already in use"
-
-**Sintomas:**
-```
-Error: listen EADDRINUSE: address already in use :::3000
-```
-
-**Soluções:**
-
-**Windows:**
-```powershell
-# Encontrar processo na porta 3000
-netstat -ano | findstr :3000
-
-# Matar processo (substitua PID)
-taskkill /PID <PID> /F
-```
-
-**Linux/Mac:**
-```bash
-# Encontrar e matar processo
-lsof -ti:3000 | xargs kill -9
-```
-
-**Alternativa:** Alterar porta no `.env`:
-```env
-PORT=3001
-```
-
----
-
-### ❌ Problema: Google API Error
-
-**Sintomas:**
-```
-Error fetching coordinates from Google Maps API
-```
-
-**Soluções:**
-
-1. ✅ **Sem API Key disponível**: Remova do `.env`
-   ```env
-   # GOOGLE_API_KEY=
-   ```
-   O script usará coordenadas aproximadas pré-definidas.
-
-2. ✅ **Com API Key**: Obtenha em [Google Cloud Console](https://console.cloud.google.com/):
-   - Ative "Geocoding API"
-   - Crie credenciais (API Key)
-   - Adicione ao `.env`:
-     ```env
-     GOOGLE_API_KEY=AIzaSy...
-     ```
-
----
-
-### ❌ Problema: Frontend não carrega
-
-**Sintomas:**
-```
-Failed to fetch / Network Error
-```
-
-**Soluções:**
-
-1. ✅ Verificar se backend está rodando:
-   ```bash
-   curl http://localhost:3000/api/v1/stops
-   ```
-
-2. ✅ Verificar CORS no backend (`src/server.ts`):
-   ```typescript
-   app.use(cors({
-     origin: 'http://localhost:5173'
-   }));
-   ```
-
-3. ✅ Verificar URL da API (`frontend/src/services/api.ts`):
-   ```typescript
-   const API_URL = 'http://localhost:3000/api/v1';
-   ```
-
----
-
-## 🤝 Contribuindo
-
-Contribuições são muito bem-vindas! Siga estas etapas:
-
-### 1️⃣ Fork do Projeto
-
-Clique em "Fork" no canto superior direito do GitHub.
-
-### 2️⃣ Clone seu Fork
-
-```bash
-git clone https://github.com/SEU_USUARIO/multiBus.git
-cd multiBus
-```
-
-### 3️⃣ Crie uma Branch
-
-```bash
-git checkout -b feature/minha-feature
-# ou
-git checkout -b fix/meu-bugfix
-```
-
-### 4️⃣ Desenvolva
-
-Faça suas alterações seguindo as convenções de código.
-
-### 5️⃣ Commit
-
-Use [Conventional Commits](https://www.conventionalcommits.org/):
-
-```bash
-git commit -m "feat: adiciona endpoint de busca por nome"
-git commit -m "fix: corrige validação de coordenadas"
-git commit -m "docs: atualiza documentação da API"
-```
-
-**Tipos de commit:**
-- `feat`: Nova funcionalidade
-- `fix`: Correção de bug
-- `docs`: Documentação
-- `style`: Formatação de código
-- `refactor`: Refatoração
-- `test`: Testes
-- `chore`: Tarefas de manutenção
-
-### 6️⃣ Push & Pull Request
-
-```bash
-git push origin feature/minha-feature
-```
-
-Abra um Pull Request no GitHub com:
-- ✅ Título descritivo
-- ✅ Descrição detalhada das mudanças
-- ✅ Screenshots (se aplicável)
-- ✅ Testes realizados
-
-### 📋 Checklist para PR
-
-- [ ] Código segue as convenções do projeto
-- [ ] Testes passando (`npm test`)
-- [ ] Documentação atualizada
-- [ ] Sem conflitos com `main`
-- [ ] Build sem erros (`npm run build`)
-- [ ] Commit messages seguem padrão
-
----
-
-## 📝 Roadmap
-
-### 🚀 Versão 2.0 (Em Planejamento)
-
-- [ ] 🔐 **Autenticação JWT** completa
-- [ ] 📱 **App Mobile** (React Native)
-- [ ] ⏱️ **Previsão de horários** em tempo real
-- [ ] 🚌 **Rastreamento GPS** de ônibus
-- [ ] 🔔 **Notificações push** de atrasos
-- [ ] 📊 **Dashboard administrativo**
-- [ ] 🌍 **Suporte multi-cidades**
-- [ ] 🧪 **Testes unitários** e E2E
-- [ ] 📈 **Analytics** de uso
-- [ ] 🌐 **Internacionalização** (i18n)
-
-### 🎯 Melhorias Contínuas
-
-- [ ] Performance otimizada
-- [ ] Acessibilidade WCAG 2.1
-- [ ] SEO otimizado
-- [ ] PWA (Progressive Web App)
-- [ ] Modo offline
-
----
 
 ## 📄 Licença
 
