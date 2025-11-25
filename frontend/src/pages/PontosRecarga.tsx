@@ -52,113 +52,103 @@ export default function PontosRecarga() {
   const pontos = [
     { 
       id: "1", 
-      nome: "Terminal Integração Sul", 
+      nome: "Terminal Integração do Valentina", 
       bairro: "Valentina", 
       endereco: "Av. Mariangela Lucena Peixoto", 
-      lat: -7.20, 
-      lng: -34.84,
+      lat: -7.2049, 
+      lng: -34.8472,
       tipo: "terminal",
-      capacidade: "alta",
-      conectores: ["CCS", "Type 2", "CHAdeMO"]
+      capacidade: "alta"
     },
     { 
       id: "2", 
       nome: "Shopping Sul", 
       bairro: "Bancários", 
-      endereco: "Rua Comerciante 88", 
-      lat: -7.14, 
-      lng: -34.84,
+      endereco: "Av. Bancário Sérgio Guerra", 
+      lat: -7.1488, 
+      lng: -34.8425,
       tipo: "shopping",
-      capacidade: "media",
-      conectores: ["CCS", "Type 2"]
+      capacidade: "media"
     },
     { 
       id: "3", 
-      nome: "Estação Cabo Branco", 
+      nome: "Estação Ciências do Cabo Branco", 
       bairro: "Altiplano", 
-      endereco: "Av. Cabo Branco, 200", 
-      lat: -7.12, 
-      lng: -34.80,
+      endereco: "Av. João Cirillo da Silva", 
+      lat: -7.1496, 
+      lng: -34.7980,
       tipo: "publico",
-      capacidade: "alta",
-      conectores: ["CCS", "Type 2", "CHAdeMO", "AC"]
+      capacidade: "alta"
     },
     { 
       id: "4", 
-      nome: "Terminal Integração Oeste", 
+      nome: "Terminal Integração de Oitizeiro", 
       bairro: "Oitizeiro", 
-      endereco: "Rua Oitizeiro, 55", 
-      lat: -7.18, 
-      lng: -34.87,
+      endereco: "AV. Cruz das Armas", 
+      lat: -7.1597, 
+      lng: -34.8961,
       tipo: "terminal",
-      capacidade: "media",
-      conectores: ["Type 2", "AC"]
+      capacidade: "media"
     },
     { 
       id: "5", 
-      nome: "Praça da Paz", 
+      nome: "Praça das Muricocas", 
       bairro: "Miramar", 
-      endereco: "Praça Central", 
-      lat: -7.14, 
-      lng: -34.82,
+      endereco: "Av. Tito Silva", 
+      lat: -7.1226, 
+      lng: -34.8366,
       tipo: "publico",
-      capacidade: "baixa",
-      conectores: ["Type 2"]
+      capacidade: "baixa"
     },
     { 
       id: "6", 
       nome: "Liv Mall", 
-      bairro: "Brisamar", 
-      endereco: "Av. Rui Carneiro, 500", 
-      lat: -7.16, 
-      lng: -34.84,
+      bairro: "Jardim Oceania", 
+      endereco: "Av. Gov. Flávio Ribeiro Coutinho", 
+      lat: -7.0973, 
+      lng: -34.8376,
       tipo: "shopping",
-      capacidade: "alta",
-      conectores: ["CCS", "Type 2", "AC"]
+      capacidade: "alta"
     },
     { 
       id: "7", 
       nome: "Mercado Central", 
       bairro: "Centro", 
-      endereco: "Rua das Palmeiras, 33", 
-      lat: -7.13, 
-      lng: -34.83,
+      endereco: "Av. Dom Pedro II", 
+      lat: -7.1226, 
+      lng: -34.8797,
       tipo: "comercial",
-      capacidade: "media",
-      conectores: ["Type 2", "AC"]
+      capacidade: "media"
     },
     { 
       id: "8", 
       nome: "Bessa Shopping", 
       bairro: "Bessa", 
-      endereco: "Av. Oceânica, 901", 
-      lat: -7.11, 
-      lng: -34.79,
+      endereco: "Av. Leocádio Ribeiro Coutinho", 
+      lat: -7.0843, 
+      lng: -34.8402,
       tipo: "shopping",
-      capacidade: "alta",
-      conectores: ["CCS", "Type 2", "CHAdeMO"]
+      capacidade: "alta"
     },
     { 
       id: "9", 
       nome: "Integração Varadouro", 
       bairro: "Varadouro", 
-      endereco: "Terminal Varadouro", 
-      lat: -7.17, 
-      lng: -34.86,
+      endereco: "Av. Francisco Londres", 
+      lat: -7.1181, 
+      lng: -34.8905,
       tipo: "terminal",
-      capacidade: "media",
-      conectores: ["Type 2", "AC"]
+      capacidade: "media"
     },
     { 
       id: "10", 
-      nome: "Posto Bessa", 
+      nome: "Posto do Bessa", 
       bairro: "Bessa", 
-      endereco: "Av. Governador Argemiro, 210", 
-      lat: -7.12, 
-      lng: -34.80,
+      endereco: "Av. Paulo Roberto de Souza Acioly", 
+      lat: -7.0633, 
+      lng: -34.8455,
       tipo: "posto",
-      capacidade: "alta",
-      conectores: ["CCS", "Type 2", "CHAdeMO", "AC"]
+      capacidade: "alta"
     },
   ];
 
@@ -601,44 +591,26 @@ export default function PontosRecarga() {
                               }}
                             />
                           </div>
-
-                          {/* Conectores */}
-                          <div className="flex flex-wrap gap-1">
-                            {ponto.conectores.map((conector, idx) => (
-                              <Chip
-                                key={idx}
-                                label={conector}
-                                size="small"
-                                variant="outlined"
-                                sx={{
-                                  borderColor: darkMode ? "#22c55e" : "#10b981",
-                                  color: darkMode ? "#22c55e" : "#10b981",
-                                  fontSize: '0.6rem',
-                                  height: 20,
-                                }}
-                              />
-                            ))}
-                          </div>
-
-                          {/* Distância */}
-                          {distancia && (
-                            <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
-                              <Typography 
-                                variant="body2" 
-                                className={darkMode ? "text-slate-400" : "text-slate-600"}
-                              >
-                                Distância
-                              </Typography>
-                              <Typography 
-                                variant="body2" 
-                                className="font-bold"
-                                sx={{ color: darkMode ? "#22c55e" : "#10b981" }}
-                              >
-                                {distancia} km
-                              </Typography>
-                            </div>
-                          )}
                         </div>
+
+                        {/* Distância */}
+                        {distancia && (
+                          <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700 mt-3">
+                            <Typography 
+                              variant="body2" 
+                              className={darkMode ? "text-slate-400" : "text-slate-600"}
+                            >
+                              Distância
+                            </Typography>
+                            <Typography 
+                              variant="body2" 
+                              className="font-bold"
+                              sx={{ color: darkMode ? "#22c55e" : "#10b981" }}
+                            >
+                              {distancia} km
+                            </Typography>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   </motion.div>
@@ -759,29 +731,6 @@ export default function PontosRecarga() {
                         </Typography>
                       </div>
                     )}
-
-                    {/* Conectores */}
-                    <div>
-                      <Typography 
-                        variant="h6" 
-                        className={`mb-2 ${darkMode ? "text-slate-300" : "text-slate-700"}`}
-                      >
-                        Conectores Disponíveis
-                      </Typography>
-                      <div className="flex flex-wrap gap-2">
-                        {modalPonto.conectores.map((conector: string, idx: number) => (
-                          <Chip
-                            key={idx}
-                            label={conector}
-                            sx={{
-                              backgroundColor: darkMode ? "rgba(34, 197, 94, 0.2)" : "rgba(16, 185, 129, 0.2)",
-                              color: darkMode ? "#22c55e" : "#10b981",
-                              fontWeight: 'bold',
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </div>
                   </div>
 
                   {/* Botão de Navegação */}
