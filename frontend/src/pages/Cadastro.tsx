@@ -13,6 +13,10 @@ import {
   Link,
   Divider,
   Tooltip,
+  Modal,
+  Fade,
+  Backdrop,
+  Paper,
 } from "@mui/material";
 import {
   Visibility,
@@ -26,6 +30,7 @@ import {
   Brightness4,
   Brightness7,
   ArrowBack,
+  Close,
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -36,6 +41,9 @@ export default function Cadastro() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState<"terms" | "privacy">("terms");
+  
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -164,6 +172,89 @@ export default function Cadastro() {
       ...prev,
       telefone: formattedValue
     }));
+  };
+
+  const handleOpenModal = (content: "terms" | "privacy") => {
+    setModalContent(content);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  // Conteúdo dos modais
+  const modalContents = {
+    terms: {
+      title: "Termos de Serviço",
+      content: `
+        <h2>Termos de Serviço do MultiBus</h2>
+        <p><strong>Última atualização:</strong> ${new Date().toLocaleDateString()}</p>
+        
+        <h3>1. Aceitação dos Termos</h3>
+        <p>Ao acessar e usar o MultiBus, você concorda em cumprir e estar vinculado a estes Termos de Serviço.</p>
+        
+        <h3>2. Serviços Oferecidos</h3>
+        <p>O MultiBus oferece serviços de consulta e reserva de passagens de ônibus, incluindo:</p>
+        <ul>
+          <li>Busca de rotas e horários</li>
+          <li>Reserva de assentos</li>
+          <li>Pagamento online</li>
+          <li>Gestão de reservas</li>
+        </ul>
+        
+        <h3>3. Cadastro do Usuário</h3>
+        <p>Para utilizar nossos serviços, você precisa criar uma conta fornecendo informações precisas e completas.</p>
+        
+        <h3>4. Responsabilidades</h3>
+        <p>Você é responsável por manter a confidencialidade de sua conta e senha.</p>
+        
+        <h3>5. Modificações nos Termos</h3>
+        <p>Reservamos o direito de modificar estes termos a qualquer momento.</p>
+      `
+    },
+    privacy: {
+      title: "Política de Privacidade",
+      content: `
+        <h2>Política de Privacidade do MultiBus</h2>
+        <p><strong>Última atualização:</strong> ${new Date().toLocaleDateString()}</p>
+        
+        <h3>1. Informações Coletadas</h3>
+        <p>Coletamos as seguintes informações:</p>
+        <ul>
+          <li>Dados pessoais (nome, e-mail, telefone)</li>
+          <li>Dados de localização</li>
+          <li>Informações de pagamento</li>
+          <li>Dados de uso do serviço</li>
+        </ul>
+        
+        <h3>2. Uso das Informações</h3>
+        <p>Utilizamos suas informações para:</p>
+        <ul>
+          <li>Fornecer e melhorar nossos serviços</li>
+          <li>Processar reservas e pagamentos</li>
+          <li>Enviar notificações importantes</li>
+          <li>Personalizar sua experiência</li>
+        </ul>
+        
+        <h3>3. Compartilhamento de Dados</h3>
+        <p>Não vendemos suas informações pessoais. Compartilhamos dados apenas com:</p>
+        <ul>
+          <li>Empresas de ônibus parceiras</li>
+          <li>Processadores de pagamento</li>
+          <li>Quando exigido por lei</li>
+        </ul>
+        
+        <h3>4. Segurança</h3>
+        <p>Implementamos medidas de segurança para proteger suas informações.</p>
+        
+        <h3>5. Seus Direitos</h3>
+        <p>Você tem direito a acessar, corrigir e excluir seus dados pessoais.</p>
+        
+        <h3>6. Contato</h3>
+        <p>Para dúvidas sobre privacidade, entre em contato: privacidade@multibus.com</p>
+      `
+    }
   };
 
   return (
@@ -327,7 +418,7 @@ export default function Cadastro() {
 
               <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  {/* Nome */}
+                  {/* Campos do formulário (mantidos iguais) */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -372,7 +463,6 @@ export default function Cadastro() {
                     />
                   </motion.div>
 
-                  {/* Email */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -418,7 +508,6 @@ export default function Cadastro() {
                     />
                   </motion.div>
 
-                  {/* Telefone */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -464,7 +553,6 @@ export default function Cadastro() {
                     />
                   </motion.div>
 
-                  {/* Cidade e UF */}
                   <div className="grid grid-cols-2 gap-3">
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
@@ -547,7 +635,6 @@ export default function Cadastro() {
                     </motion.div>
                   </div>
 
-                  {/* Senha */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -602,7 +689,6 @@ export default function Cadastro() {
                     />
                   </motion.div>
 
-                  {/* Confirmar Senha */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -682,7 +768,9 @@ export default function Cadastro() {
                       <Typography sx={{ color: darkMode ? "#cbd5e1" : "#374151", fontSize: '0.875rem' }}>
                         Eu concordo com os{" "}
                         <Link
-                          href="/termos"
+                          component="button"
+                          type="button"
+                          onClick={() => handleOpenModal("terms")}
                           sx={{
                             color: darkMode ? "#22c55e" : "#10b981",
                             textDecoration: "none",
@@ -695,7 +783,9 @@ export default function Cadastro() {
                         </Link>{" "}
                         e{" "}
                         <Link
-                          href="/privacidade"
+                          component="button"
+                          type="button"
+                          onClick={() => handleOpenModal("privacy")}
                           sx={{
                             color: darkMode ? "#22c55e" : "#10b981",
                             textDecoration: "none",
@@ -811,6 +901,124 @@ export default function Cadastro() {
           </Typography>
         </motion.div>
       </Container>
+
+      {/* Modal para Termos e Política de Privacidade */}
+      <Modal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          p: 2,
+        }}
+      >
+        <Fade in={modalOpen}>
+          <Paper
+            sx={{
+              maxWidth: 800,
+              width: '100%',
+              maxHeight: '90vh',
+              overflow: 'auto',
+              background: darkMode
+                ? "linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(51, 65, 85, 0.95) 100%)"
+                : "linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%)",
+              backdropFilter: "blur(20px)",
+              border: `1px solid ${darkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"}`,
+              borderRadius: 4,
+              boxShadow: darkMode 
+                ? "0 25px 50px -12px rgba(0, 0, 0, 0.5)"
+                : "0 25px 50px -12px rgba(0, 0, 0, 0.15)",
+              p: 4,
+              position: 'relative',
+            }}
+          >
+            {/* Header do Modal */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 'bold',
+                  color: darkMode ? "#22c55e" : "#10b981",
+                }}
+              >
+                {modalContents[modalContent].title}
+              </Typography>
+              <IconButton
+                onClick={handleCloseModal}
+                sx={{
+                  color: darkMode ? "#94a3b8" : "#64748b",
+                  '&:hover': {
+                    backgroundColor: darkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)",
+                  },
+                }}
+              >
+                <Close />
+              </IconButton>
+            </Box>
+
+            {/* Conteúdo do Modal */}
+            <Box
+              sx={{
+                color: darkMode ? "#cbd5e1" : "#374151",
+                lineHeight: 1.6,
+                '& h2': {
+                  color: darkMode ? "#22c55e" : "#10b981",
+                  mt: 3,
+                  mb: 2,
+                },
+                '& h3': {
+                  color: darkMode ? "#22c55e" : "#10b981",
+                  mt: 2,
+                  mb: 1,
+                },
+                '& p': {
+                  mb: 2,
+                },
+                '& ul': {
+                  pl: 3,
+                  mb: 2,
+                },
+                '& li': {
+                  mb: 1,
+                },
+                '& strong': {
+                  color: darkMode ? "#22c55e" : "#10b981",
+                },
+              }}
+              dangerouslySetInnerHTML={{ __html: modalContents[modalContent].content }}
+            />
+
+            {/* Botão de Fechar */}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
+              <Button
+                onClick={handleCloseModal}
+                variant="contained"
+                sx={{
+                  background: darkMode 
+                    ? "linear-gradient(135deg, #059669 0%, #047857 100%)" 
+                    : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                  color: "white",
+                  borderRadius: 2,
+                  px: 4,
+                  '&:hover': {
+                    background: darkMode 
+                      ? "linear-gradient(135deg, #047857 0%, #065f46 100%)" 
+                      : "linear-gradient(135deg, #059669 0%, #047857 100%)",
+                  },
+                }}
+              >
+                Fechar
+              </Button>
+            </Box>
+          </Paper>
+        </Fade>
+      </Modal>
     </Box>
   );
 }
