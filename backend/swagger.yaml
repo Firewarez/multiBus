@@ -799,60 +799,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /api/v1/users/login:
-    post:
-      summary: Login de usuário
-      description: Autentica um usuário no sistema
+  /api/v1/users:
+    get:
+      summary: Lista todos os usuários
+      description: Retorna uma lista de todos os usuários cadastrados
       tags:
         - Usuários
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-                - senha
-              properties:
-                email:
-                  type: string
-                  format: email
-                  example: "joao@email.com"
-                senha:
-                  type: string
-                  example: "senha123"
       responses:
         '200':
-          description: Login realizado com sucesso
+          description: Lista de usuários
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Login realizado com sucesso"
-                  usuario:
-                    $ref: '#/components/schemas/User'
-        '401':
-          description: Credenciais inválidas
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Credenciais inválidas"
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
         '500':
           description: Erro interno do servidor
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
-  /api/v1/users:
     post:
       summary: Registra um novo usuário
       description: Cria uma nova conta de usuário no sistema
