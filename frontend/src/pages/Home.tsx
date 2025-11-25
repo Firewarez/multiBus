@@ -72,6 +72,11 @@ export default function Home() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const navigate = useNavigate();
 
+  // Efeito para rolar para o topo quando o componente for montado
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const toggleDrawer = () => setMobileOpen(!mobileOpen);
   const drawerWidth = 280;
 
