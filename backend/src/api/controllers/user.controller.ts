@@ -69,6 +69,16 @@ export const registerUser = async (req: Request, res: Response) => {
     });
     try {
         const userData = userSchema.parse(req.body);
+        
+        // Verificar se email já existe
+        const existingUser = await userService.getUserByEmail(userData.email);
+        if (existingUser) {
+            return res.status(409).json({ 
+                error: "E-mail já cadastrado",
+                message: "Este e-mail já está em uso. Tente fazer login ou use outro e-mail." 
+            });
+        }
+        
         const newUser = await userService.registerUser(
             userData.nome,
             userData.email,
@@ -77,11 +87,15 @@ export const registerUser = async (req: Request, res: Response) => {
             userData.senha,
             userData.nascimento
         );
-        res.status(201).json(newUser);
+        
+        // Remove senha da resposta
+        const { senha: _, ...userWithoutPassword } = newUser;
+        res.status(201).json(userWithoutPassword);
     } catch (error) {
         if (error instanceof z.ZodError) {
             res.status(400).json({ errors: error.issues });
         } else {
+            console.error('Erro ao registrar usuário:', error);
             res.status(500).json({ error: "Internal server error" });
         }
     }

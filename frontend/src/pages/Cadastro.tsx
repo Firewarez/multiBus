@@ -169,8 +169,12 @@ export default function Cadastro() {
         console.error("Erro no cadastro:", error);
         if (error.response?.status === 400) {
           setRegisterError("Dados inválidos. Verifique os campos.");
+        } else if (error.response?.status === 409) {
+          setRegisterError("Este e-mail já está cadastrado. Faça login ou use outro e-mail.");
         } else if (error.response?.data?.message) {
           setRegisterError(error.response.data.message);
+        } else if (error.response?.data?.error) {
+          setRegisterError(error.response.data.error);
         } else {
           setRegisterError("Erro ao criar conta. Tente novamente.");
         }
