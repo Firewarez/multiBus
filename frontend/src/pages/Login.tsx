@@ -28,6 +28,7 @@ import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
+import { loginAPI } from "../services/api";
 
 export default function Login() {
   const { darkMode, toggleDarkMode } = useTheme();
@@ -101,41 +102,34 @@ export default function Login() {
 
     setLoading(true);
 
-    // Simular processo de login
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Chamar API real de login
+      const response = await loginAPI(formData.email, formData.password);
       
-      // ✅ Aceitar QUALQUER e-mail válido e senha com pelo menos 6 caracteres
-      const isValidLogin = /\S+@\S+\.\S+/.test(formData.email) && formData.password.length >= 6;
-      
-      if (isValidLogin) {
-        // ✅ CORREÇÃO: Usar função do AuthContext
-        const userToken = 'mock-jwt-token-' + Date.now();
+      if (response && response.usuario) {
+        // Login bem-sucedido
+        const userToken = 'jwt-token-' + response.usuario.id;
         login(userToken);
         
-        // Login bem-sucedido - salvar no localStorage se "Lembrar-me" estiver marcado
+        // Salvar informações do usuário
+        localStorage.setItem('userId', response.usuario.id);
+        localStorage.setItem('userInfo', JSON.stringify(response.usuario));
+        
         if (formData.rememberMe) {
           localStorage.setItem('userEmail', formData.email);
-          localStorage.setItem('userLoggedIn', 'true');
         }
         
-        // Salvar informações do usuário para usar no Home
-        const userInfo = {
-          email: formData.email,
-          nome: formData.email.split('@')[0], // Usa a parte antes do @ como nome
-          telefone: "(11) 99999-9999", // Valor padrão
-          cidade: "São Paulo", // Valor padrão
-          uf: "SP" // Valor padrão
-        };
-        localStorage.setItem('userInfo', JSON.stringify(userInfo));
-        
-        // ✅ CORREÇÃO: Navegar para a página anterior ou home
         navigate(from, { replace: true });
       } else {
         setLoginError("E-mail ou senha incorretos. Tente novamente.");
       }
-    } catch (error) {
-      setLoginError("Erro ao fazer login. Tente novamente.");
+    } catch (error: any) {
+      console.error('Erro no login:', error);
+      if (error.response?.status === 401) {
+        setLoginError("E-mail ou senha incorretos.");
+      } else {
+        setLoginError("Erro ao conectar com o servidor. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }

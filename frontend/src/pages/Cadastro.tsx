@@ -17,6 +17,7 @@ import {
   Fade,
   Backdrop,
   Paper,
+  Alert,
 } from "@mui/material";
 import {
   Visibility,
@@ -35,6 +36,7 @@ import {
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { registerAPI } from "../services/api";
 
 export default function Cadastro() {
   const { darkMode, toggleDarkMode } = useTheme();
@@ -64,6 +66,8 @@ export default function Cadastro() {
     confirmPassword: "",
     acceptTerms: "",
   });
+  const [registerError, setRegisterError] = useState("");
+  const [registerSuccess, setRegisterSuccess] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -139,12 +143,53 @@ export default function Cadastro() {
     return !Object.values(newErrors).some(error => error !== "");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setRegisterError("");
+    setRegisterSuccess(false);
+
     if (validateForm()) {
-      // Simular cadastro bem-sucedido
-      console.log("Cadastro realizado:", formData);
-      navigate("/login");
+      try {
+        // Remover formatação do telefone (apenas números)
+        const telefoneNumeros = formData.telefone.replace(/\D/g, '');
+
+        // Criar data de nascimento (placeholder - você pode adicionar campo no form depois)
+        const nascimento = new Date('2000-01-01').toISOString();
+
+        // Gerar CPF único temporário (timestamp + random)
+        const cpfTemporario = `${Date.now()}${Math.floor(Math.random() * 100)}`.slice(0, 11).padStart(11, '0');
+
+        const userData = {
+          nome: formData.nome,
+          email: formData.email,
+          cpf: cpfTemporario, // CPF temporário único até adicionar campo no form
+          telefone: telefoneNumeros,
+          senha: formData.password,
+          nascimento: nascimento
+        };
+
+        const response = await registerAPI(userData);
+        
+        if (response) {
+          setRegisterSuccess(true);
+          setTimeout(() => {
+            navigate("/login");
+          }, 2000);
+        }
+      } catch (error: any) {
+        console.error("Erro no cadastro:", error);
+        if (error.response?.status === 400) {
+          setRegisterError("Dados inválidos. Verifique os campos.");
+        } else if (error.response?.status === 409) {
+          setRegisterError("Este e-mail já está cadastrado. Faça login ou use outro e-mail.");
+        } else if (error.response?.data?.message) {
+          setRegisterError(error.response.data.message);
+        } else if (error.response?.data?.error) {
+          setRegisterError(error.response.data.error);
+        } else {
+          setRegisterError("Erro ao criar conta. Tente novamente.");
+        }
+      }
     }
   };
 
@@ -416,9 +461,21 @@ export default function Cadastro() {
                 Preencha os dados abaixo para criar sua conta
               </Typography>
 
+              {registerError && (
+                <Alert severity="error" sx={{ mb: 3 }}>
+                  {registerError}
+                </Alert>
+              )}
+
+              {registerSuccess && (
+                <Alert severity="success" sx={{ mb: 3 }}>
+                  Conta criada com sucesso! Redirecionando para login...
+                </Alert>
+              )}
+
               <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  {/* Campos do formulário (mantidos iguais) */}
+                  {/* Campos do formulário */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}

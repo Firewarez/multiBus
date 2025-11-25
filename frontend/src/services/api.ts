@@ -57,4 +57,32 @@ export const getAllNotificacoesAPI = async () => {
     return response.data;
 };
 
+// Funções para autenticação e usuários
+export const loginAPI = async (email: string, senha: string) => {
+    const response = await api.post('/users/login', { email, senha });
+    return response.data;
+};
+
+export const registerAPI = async (userData: {
+    nome: string;
+    email: string;
+    cpf: string;
+    telefone: string;
+    senha: string;
+    nascimento: string;
+}) => {
+    const response = await api.post('/users', userData);
+    return response.data;
+};
+
+export const getUserByIdAPI = async (userId: number) => {
+    const response = await api.get(`/users/${userId}`);
+    return response.data;
+};
+
+export const updateUserAPI = async (userId: number, userData: any) => {
+    const response = await api.put(`/users/${userId}`, userData);
+    return response.data;
+};
+
 export default api;
