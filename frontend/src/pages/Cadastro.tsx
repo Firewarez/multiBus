@@ -107,10 +107,16 @@ export default function Cadastro() {
       newErrors.email = "E-mail inválido";
     }
 
+    // Validação do telefone - apenas números e 11 dígitos
     if (!formData.telefone) {
       newErrors.telefone = "Telefone é obrigatório";
-    } else if (formData.telefone.length < 11) {
-      newErrors.telefone = "Telefone deve ter 11 dígitos";
+    } else {
+      const telefoneNumeros = formData.telefone.replace(/\D/g, '');
+      if (telefoneNumeros.length !== 11) {
+        newErrors.telefone = "Telefone deve ter 11 dígitos (DDD + número)";
+      } else if (!/^\d+$/.test(telefoneNumeros)) {
+        newErrors.telefone = "Telefone deve conter apenas números";
+      }
     }
 
     if (!formData.cidade) {
@@ -152,6 +158,15 @@ export default function Cadastro() {
       try {
         // Remover formatação do telefone (apenas números)
         const telefoneNumeros = formData.telefone.replace(/\D/g, '');
+
+        // Validar novamente o telefone antes de enviar
+        if (telefoneNumeros.length !== 11) {
+          setErrors(prev => ({
+            ...prev,
+            telefone: "Telefone deve ter 11 dígitos"
+          }));
+          return;
+        }
 
         // Criar data de nascimento (placeholder - você pode adicionar campo no form depois)
         const nascimento = new Date('2000-01-01').toISOString();
@@ -198,21 +213,65 @@ export default function Cadastro() {
   };
 
   const formatPhone = (value: string) => {
+    // Remover todos os não-dígitos
     const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 11) {
-      if (numbers.length <= 2) {
-        return numbers;
-      } else if (numbers.length <= 7) {
-        return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
-      } else {
-        return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
-      }
+    
+    // Limitar a 11 dígitos (DDD + 9 dígitos)
+    const limitedNumbers = numbers.slice(0, 11);
+    
+    // Aplicar a formatação
+    if (limitedNumbers.length <= 2) {
+      return limitedNumbers;
+    } else if (limitedNumbers.length <= 7) {
+      return `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2)}`;
+    } else {
+      return `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2, 7)}-${limitedNumbers.slice(7, 11)}`;
     }
-    return value;
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = formatPhone(e.target.value);
+    // Permite apenas números e formata
+    let value = e.target.value;
+    
+    // Remove todos os caracteres não numéricos
+    value = value.replace(/\D/g, '');
+    
+    // Limita a 11 dígitos
+    if (value.length > 11) {
+      value = value.slice(0, 11);
+    }
+    
+    // Aplica formatação
+    const formattedValue = formatPhone(value);
+    
+    setFormData(prev => ({
+      ...prev,
+      telefone: formattedValue
+    }));
+    
+    // Limpa erro se existir
+    if (errors.telefone) {
+      setErrors(prev => ({
+        ...prev,
+        telefone: ""
+      }));
+    }
+  };
+
+  // Função para evitar entrada de letras via colar
+  const handlePhonePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedText = e.clipboardData.getData('text');
+    
+    // Remove todos os não-dígitos
+    const numbersOnly = pastedText.replace(/\D/g, '');
+    
+    // Limita a 11 dígitos
+    const limitedNumbers = numbersOnly.slice(0, 11);
+    
+    // Aplica formatação
+    const formattedValue = formatPhone(limitedNumbers);
+    
     setFormData(prev => ({
       ...prev,
       telefone: formattedValue
@@ -576,9 +635,14 @@ export default function Cadastro() {
                       label="Telefone"
                       value={formData.telefone}
                       onChange={handlePhoneChange}
+                      onPaste={handlePhonePaste}
                       error={!!errors.telefone}
                       helperText={errors.telefone}
                       placeholder="(00) 00000-0000"
+                      inputProps={{
+                        maxLength: 15, // Com formatação: (99) 99999-9999 = 15 caracteres
+                        inputMode: "numeric" // Para mobile mostrar teclado numérico
+                      }}
                       InputProps={{
                         startAdornment: (
                           <Phone 
