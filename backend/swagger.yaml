@@ -800,6 +800,26 @@ paths:
                 $ref: '#/components/schemas/Error'
 
   /api/v1/users:
+    get:
+      summary: Lista todos os usuários
+      description: Retorna uma lista de todos os usuários cadastrados
+      tags:
+        - Usuários
+      responses:
+        '200':
+          description: Lista de usuários
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       summary: Registra um novo usuário
       description: Cria uma nova conta de usuário no sistema
@@ -829,6 +849,19 @@ paths:
                     type: array
                     items:
                       type: object
+        '409':
+          description: E-mail já cadastrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "E-mail já cadastrado"
+                  message:
+                    type: string
+                    example: "Este e-mail já está em uso. Tente fazer login ou use outro e-mail."
         '500':
           description: Erro interno do servidor
           content:
@@ -837,6 +870,41 @@ paths:
                 $ref: '#/components/schemas/Error'
 
   /api/v1/users/{id}:
+    get:
+      summary: Busca usuário por ID
+      description: Retorna os dados de um usuário específico
+      tags:
+        - Usuários
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do usuário
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dados do usuário
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Usuário não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Usuário não encontrado"
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     put:
       summary: Atualiza dados do usuário
       description: Atualiza as informações de um usuário existente
