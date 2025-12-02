@@ -63,6 +63,8 @@ import { useProfile } from "../context/ProfileContext";
 import { useAuth } from "../context/AuthContext";
 import { getNotificacoesAtivasAPI, getUserByIdAPI } from '../services/api';
 
+// Página Home
+
 export default function Home() {
   const { darkMode, toggleDarkMode } = useTheme();
   const { profile, getProfileImage } = useProfile();
