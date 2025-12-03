@@ -140,7 +140,7 @@ export default function Home() {
 
   const handleLogout = () => {
     handleProfileMenuClose();
-    logout(); // Usar função do contexto
+    logout(); 
     navigate("/login");
   };
 
