@@ -76,7 +76,6 @@ export default function Cadastro() {
       [name]: type === 'checkbox' ? checked : value
     }));
     
-    // Clear errors when user starts typing
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({
         ...prev,
