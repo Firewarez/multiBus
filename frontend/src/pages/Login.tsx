@@ -48,7 +48,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
 
-  // ✅ CORREÇÃO: Redirecionar para a página anterior ou home
   const from = location.state?.from?.pathname || "/";
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +57,6 @@ export default function Login() {
       [name]: type === 'checkbox' ? checked : value
     }));
     
-    // Clear errors when user starts typing
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({
         ...prev,
@@ -103,15 +101,12 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // Chamar API real de login
       const response = await loginAPI(formData.email, formData.password);
       
       if (response && response.usuario) {
-        // Login bem-sucedido
         const userToken = 'jwt-token-' + response.usuario.id;
         login(userToken);
         
-        // Salvar informações do usuário
         localStorage.setItem('userId', response.usuario.id);
         localStorage.setItem('userInfo', JSON.stringify(response.usuario));
         
