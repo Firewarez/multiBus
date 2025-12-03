@@ -6,7 +6,7 @@ info:
   contact:
     name: MultiBus Team
 servers:
-  - url: http://localhost:3000
+  - url: https://multibus-api.onrender.com/api-docs
     description: Servidor de desenvolvimento
 
 paths:
