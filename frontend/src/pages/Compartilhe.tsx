@@ -28,20 +28,62 @@ import {
 } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext"; // ← 1. ADICIONE ESTE IMPORT
+import { useTheme } from "../context/ThemeContext";
 
+/**
+ * Componente Compartilhe - Tela de compartilhamento do aplicativo MultiBus
+ * 
+ * Esta tela permite que usuários compartilhem o aplicativo através de diversas
+ * plataformas sociais, com suporte a tema escuro/claro e animações fluidas.
+ * 
+ * Principais funcionalidades:
+ * - Compartilhamento via WhatsApp, Facebook e Twitter
+ * - Cópia de link para área de transferência
+ * - Alternância entre temas claro/escuro
+ * - Estatísticas de compartilhamento
+ * - Animações com Framer Motion
+ * 
+ * @returns {JSX.Element} Componente de tela de compartilhamento
+ */
 export default function Compartilhe() {
-  const { darkMode, toggleDarkMode } = useTheme(); // ← 2. SUBSTITUA ESTA LINHA
+  // ================ ESTADOS E HOOKS ================
+  
+  // Contexto de tema para gerenciar modo escuro/claro
+  const { darkMode, toggleDarkMode } = useTheme();
+  
+  // Estado para controle da notificação de cópia bem-sucedida
   const [copySuccess, setCopySuccess] = useState(false);
+  
+  // Estado para contador de compartilhamentos (poderia vir de API)
   const [shareCount, setShareCount] = useState(128);
+  
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
 
+  // ================ LINKS DE COMPARTILHAMENTO ================
+  
+  /**
+   * URLs pré-formatadas para compartilhamento em redes sociais
+   * Incluem texto otimizado e encoding adequado para URLs
+   */
   const shareLinks = {
-    whatsapp: `https://wa.me/?text=${encodeURIComponent("Confira o MultiBus - Seu transporte inteligente! 🚌✨ Acesse: https://multibus.app")}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://multibus.app")}`,
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent("Descobri o MultiBus - App incrível para transporte público! 🚍 https://multibus.app")}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(
+      "Confira o MultiBus - Seu transporte inteligente! 🚌✨ Acesse: https://multibus.app"
+    )}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+      "https://multibus.app"
+    )}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+      "Descobri o MultiBus - App incrível para transporte público! 🚍 https://multibus.app"
+    )}`,
   };
 
+  // ================ FUNÇÕES DE MANIPULAÇÃO ================
+  
+  /**
+   * Copia o link do aplicativo para a área de transferência
+   * Exibe feedback visual através de Snackbar
+   */
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText("https://multi-bus-develop.vercel.app/");
@@ -52,6 +94,17 @@ export default function Compartilhe() {
     }
   };
 
+  // ================ OPÇÕES DE COMPARTILHAMENTO ================
+  
+  /**
+   * Array de opções de compartilhamento disponíveis
+   * Cada objeto contém:
+   * - name: Nome da plataforma
+   * - icon: Ícone correspondente
+   * - color: Gradiente de cores (adaptado ao tema)
+   * - description: Texto descritivo
+   * - action: Função a ser executada ao clicar
+   */
   const shareOptions = [
     {
       name: "WhatsApp",
@@ -91,6 +144,8 @@ export default function Compartilhe() {
     }
   ];
 
+  // ================ RENDERIZAÇÃO ================
+  
   return (
     <Box
       sx={{
@@ -102,7 +157,9 @@ export default function Compartilhe() {
         overflow: "hidden",
       }}
     >
-      {/* Background decorativo */}
+      {/* ========== BACKGROUND DECORATIVO ========== */}
+      
+      {/* Gradiente de fundo para efeito visual */}
       <Box
         sx={{
           position: "absolute",
@@ -118,16 +175,21 @@ export default function Compartilhe() {
         }}
       />
 
+      {/* ========== CONTEÚDO PRINCIPAL ========== */}
+      
       <Container maxWidth="md" sx={{ position: "relative", zIndex: 1, py: 4 }}>
-        {/* Header com modo escuro */}
+        
+        {/* ----- HEADER COM BOTÃO DE TEMA ----- */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex justify-between items-center mb-12" // Aumentei o margin-bottom
+          className="flex justify-between items-center mb-12"
         >
-          <div></div> {/* Espaço vazio para alinhamento */}
+          {/* Espaço reservado para possível logo ou menu */}
+          <div></div>
           
+          {/* Botão para alternar entre modo claro/escuro */}
           <Tooltip title={darkMode ? "Modo claro" : "Modo escuro"}>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
               <IconButton 
@@ -146,17 +208,18 @@ export default function Compartilhe() {
           </Tooltip>
         </motion.div>
 
-        {/* Conteúdo principal - Movido mais para cima */}
+        {/* ----- SEÇÃO DE APRESENTAÇÃO ----- */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8" // Reduzi o margin-bottom
+          className="text-center mb-8"
         >
+          {/* Ícone de compartilhamento animado */}
           <motion.div
             whileHover={{ scale: 1.1, rotate: 5 }}
             transition={{ type: "spring", stiffness: 300 }}
-            className="mb-4" // Reduzi o margin-bottom
+            className="mb-4"
           >
             <Share sx={{ 
               fontSize: 80, 
@@ -164,28 +227,31 @@ export default function Compartilhe() {
             }} />
           </motion.div>
           
+          {/* Título principal */}
           <Typography
             variant="h2"
-            className={`font-bold mb-3 ${darkMode ? "text-green-300" : "text-green-700"}`} // Reduzi o margin-bottom
+            className={`font-bold mb-3 ${darkMode ? "text-green-300" : "text-green-700"}`}
           >
             Compartilhe o MultiBus
           </Typography>
           
+          {/* Subtítulo descritivo */}
           <Typography
             variant="h6"
             className={darkMode ? "text-slate-300" : "text-slate-600"}
-            sx={{ maxWidth: 600, margin: '0 auto', mb: 3 }} // Reduzi o margin
+            sx={{ maxWidth: 600, margin: '0 auto', mb: 3 }}
           >
             Ajude seus amigos a descobrirem uma forma mais inteligente de se locomover
           </Typography>
 
-          {/* Estatísticas - Movidas mais para cima */}
+          {/* ----- ESTATÍSTICAS ----- */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
             className="flex justify-center gap-6"
           >
+            {/* Card de compartilhamentos */}
             <Card
               sx={{
                 background: darkMode 
@@ -214,6 +280,7 @@ export default function Compartilhe() {
               </div>
             </Card>
 
+            {/* Card de usuários ativos */}
             <Card
               sx={{
                 background: darkMode 
@@ -244,21 +311,22 @@ export default function Compartilhe() {
           </motion.div>
         </motion.div>
 
-        {/* Opções de Compartilhamento - Mais compacto */}
+        {/* ----- OPÇÕES DE COMPARTILHAMENTO ----- */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="mb-8" // Reduzi o margin-bottom
+          className="mb-8"
         >
           <Typography 
             variant="h4" 
-            className={`font-bold text-center mb-6 ${darkMode ? "text-green-400" : "text-green-700"}`} // Reduzi o margin-bottom
+            className={`font-bold text-center mb-6 ${darkMode ? "text-green-400" : "text-green-700"}`}
           >
             Escolha como compartilhar
           </Typography>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> {/* Reduzi o gap */}
+          {/* Grid de opções de compartilhamento */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {shareOptions.map((option, index) => (
               <motion.div
                 key={option.name}
@@ -284,21 +352,24 @@ export default function Compartilhe() {
                   }}
                   onClick={option.action}
                 >
-                  <CardContent className="p-4 text-center"> {/* Reduzi o padding */}
+                  <CardContent className="p-4 text-center">
+                    {/* Ícone circular com gradiente */}
                     <div 
-                      className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 text-white" // Reduzi o tamanho
+                      className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 text-white"
                       style={{ background: option.color }}
                     >
                       {option.icon}
                     </div>
                     
+                    {/* Nome da opção */}
                     <Typography 
                       variant="h6" 
-                      className={`font-bold mb-1 ${darkMode ? "text-slate-200" : "text-slate-800"}`} // Reduzi o margin-bottom
+                      className={`font-bold mb-1 ${darkMode ? "text-slate-200" : "text-slate-800"}`}
                     >
                       {option.name}
                     </Typography>
                     
+                    {/* Descrição */}
                     <Typography 
                       variant="body2" 
                       className={darkMode ? "text-slate-400" : "text-slate-600"}
@@ -312,7 +383,7 @@ export default function Compartilhe() {
           </div>
         </motion.div>
 
-        {/* Mensagem de Convite - Mais compacta */}
+        {/* ----- MENSAGEM DE CONVITE ----- */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -327,13 +398,15 @@ export default function Compartilhe() {
               borderRadius: 3,
             }}
           >
-            <CardContent className="p-4 text-center"> {/* Reduzi o padding */}
+            <CardContent className="p-4 text-center">
+              {/* Ícone de grupo */}
               <Groups sx={{ 
                 fontSize: 40, 
                 color: darkMode ? "#22c55e" : "#10b981",
                 marginBottom: 2 
               }} />
               
+              {/* Título convidativo */}
               <Typography 
                 variant="h5" 
                 className={`font-bold mb-3 ${darkMode ? "text-green-400" : "text-green-700"}`} 
@@ -341,15 +414,17 @@ export default function Compartilhe() {
                 Espalhe a Novidade!
               </Typography>
               
+              {/* Mensagem motivacional */}
               <Typography 
                 variant="body1" 
                 className={darkMode ? "text-slate-300" : "text-slate-700"}
-                sx={{ marginBottom: 2 }} // Reduzi o margin
+                sx={{ marginBottom: 2 }}
               >
                 Cada compartilhamento ajuda mais pessoas a descobrirem uma forma 
                 mais inteligente e eficiente de usar o transporte público.
               </Typography>
 
+              {/* Chip com mensagem inspiradora */}
               <Chip
                 icon={<Share />}
                 label="Juntos podemos transformar a mobilidade urbana"
@@ -359,7 +434,7 @@ export default function Compartilhe() {
                   color: darkMode ? "#22c55e" : "#10b981",
                   backgroundColor: darkMode ? "rgba(34, 197, 94, 0.1)" : "rgba(16, 185, 129, 0.1)",
                   fontSize: '0.9rem',
-                  padding: 1.5, // Reduzi o padding
+                  padding: 1.5,
                 }}
               />
             </CardContent>
@@ -367,7 +442,7 @@ export default function Compartilhe() {
         </motion.div>
       </Container>
 
-      {/* FAB para voltar */}
+      {/* ========== BOTÃO FLUTUANTE VOLTAR ========== */}
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -393,7 +468,7 @@ export default function Compartilhe() {
         </Tooltip>
       </motion.div>
 
-      {/* Snackbar de confirmação */}
+      {/* ========== SNACKBAR DE CONFIRMAÇÃO ========== */}
       <Snackbar
         open={copySuccess}
         autoHideDuration={3000}
