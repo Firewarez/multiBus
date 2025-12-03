@@ -63,7 +63,6 @@ import { useProfile } from "../context/ProfileContext";
 import { useAuth } from "../context/AuthContext";
 import { getNotificacoesAtivasAPI, getUserByIdAPI } from '../services/api';
 
-// Página Home
 
 export default function Home() {
   const { darkMode, toggleDarkMode } = useTheme();
@@ -77,9 +76,6 @@ export default function Home() {
   const [userData, setUserData] = useState<any>(null);
   const navigate = useNavigate();
 
-  // ✅ CORREÇÃO: Removida a verificação duplicada de autenticação
-
-  // Efeito para rolar para o topo quando o componente for montado
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
