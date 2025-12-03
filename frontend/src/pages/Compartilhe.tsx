@@ -329,14 +329,14 @@ export default function Compartilhe() {
           >
             <CardContent className="p-4 text-center"> {/* Reduzi o padding */}
               <Groups sx={{ 
-                fontSize: 40, // Reduzi o tamanho do ícone
+                fontSize: 40, 
                 color: darkMode ? "#22c55e" : "#10b981",
-                marginBottom: 2 // Reduzi o margin
+                marginBottom: 2 
               }} />
               
               <Typography 
                 variant="h5" 
-                className={`font-bold mb-3 ${darkMode ? "text-green-400" : "text-green-700"}`} // Reduzi o margin-bottom
+                className={`font-bold mb-3 ${darkMode ? "text-green-400" : "text-green-700"}`} 
               >
                 Espalhe a Novidade!
               </Typography>
